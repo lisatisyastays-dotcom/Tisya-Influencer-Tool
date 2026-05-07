@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tisya Stays — Influencer Scoring Framework v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg-card: #FFFFFF;
+  --bg-muted: #F3F2EE;
+  --bg-elevated: #FFFFFF;
+  --text-1: #181710;
+  --text-2: #5C5850;
+  --text-3: #9C978E;
+  --border-1: #E8E6E0;
+  --border-2: #D4D0C8;
+  --accent: #B8860B;
+  --accent-soft: #F7F0E0;
+  --green: #1A7A4C;
+  --green-bg: #E6F5ED;
+  --green-soft: #D0EDDB;
+  --amber: #9A6700;
+  --amber-bg: #FEF3D0;
+  --amber-soft: #FDEAB0;
+  --red: #C13A31;
+  --red-bg: #FDE8E6;
+  --red-soft: #F9D0CC;
+  --blue: #2563EB;
+  --blue-bg: #EFF6FF;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--text-1);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-mark {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 14px; color: #fff;
+  letter-spacing: -0.02em;
+}
+.header-text h1 {
+  font-size: 15px; font-weight: 600; color: #fff;
+  letter-spacing: 0.02em;
+}
+.header-text span {
+  font-size: 11px; color: rgba(255,255,255,0.4);
+  letter-spacing: 0.03em;
+}
+.header-ver {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--accent); background: rgba(184,134,11,0.15);
+  border: 1px solid rgba(184,134,11,0.25);
+  padding: 4px 12px; border-radius: 20px;
+  font-weight: 500; letter-spacing: 0.04em;
+}
+
+/* ── CONTAINER ── */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tab {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.tab:hover { color: var(--text-1); background: var(--bg-muted); }
+.tab.active {
+  background: var(--text-1); color: #fff; font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.panel { display: none; animation: fadeUp 0.3s var(--ease); }
+.panel.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION LABELS ── */
+.section-label {
+  font-size: 10px; font-weight: 600; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin: 28px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label:first-child { margin-top: 0; }
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border-1);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+.card-flush { padding: 0; overflow: hidden; }
+
+/* ── FORM FIELDS ── */
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-size: 11px; font-weight: 500; color: var(--text-2);
+  letter-spacing: 0.02em;
+}
+.field input, .field select {
+  font-size: 13px; font-family: var(--font);
+  background: var(--bg-muted); border: 1px solid var(--border-1);
+  border-radius: var(--radius); padding: 10px 12px;
+  color: var(--text-1); outline: none;
+  transition: all 0.15s var(--ease);
+}
+.field input:focus, .field select:focus {
+  border-color: var(--accent); background: #fff;
+  box-shadow: 0 0 0 3px rgba(184,134,11,0.1);
+}
+.field input::placeholder { color: var(--text-3); }
+.field-hint {
+  font-size: 10px; color: var(--text-3); margin-top: -2px;
+  font-style: italic;
+}
+
+/* ── BUTTON ── */
+.btn {
+  background: var(--text-1); color: #fff; border: none;
+  border-radius: var(--radius); padding: 11px 28px;
+  font-size: 13px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; letter-spacing: 0.02em;
+  transition: all 0.15s var(--ease);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn:active { transform: translateY(0); }
+.btn-sm { padding: 7px 16px; font-size: 12px; }
+.btn-ghost {
+  background: transparent; color: var(--text-2);
+  border: 1px solid var(--border-1);
+}
+.btn-ghost:hover { background: var(--bg-muted); color: var(--text-1); opacity: 1; }
+
+/* ── SCORE DISPLAY ── */
+.score-hero {
+  display: flex; align-items: center; gap: 24px;
+  flex-wrap: wrap; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-1); margin-bottom: 16px;
+}
+.score-ring {
+  width: 88px; height: 88px; position: relative;
+  flex-shrink: 0;
+}
+.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: var(--bg-muted); stroke-width: 6; }
+.score-ring-fill {
+  fill: none; stroke-width: 6; stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s var(--ease), stroke 0.3s;
+}
+.score-ring-num {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 28px; font-weight: 600; letter-spacing: -0.02em;
+  font-family: var(--font);
+}
+.score-ring-num small {
+  font-size: 13px; font-weight: 400; color: var(--text-3);
+}
+.score-meta { flex: 1; min-width: 180px; }
+.score-band {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 4px;
+}
+.reco-pill {
+  display: inline-block; padding: 6px 16px; border-radius: 20px;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+}
+.reco-context {
+  font-size: 12px; color: var(--text-2); margin-top: 6px; line-height: 1.5;
+}
+
+/* ── BREAKDOWN GRID ── */
+.breakdown-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+}
+.bd-card {
+  background: var(--bg-muted); border-radius: var(--radius); padding: 12px;
+  position: relative; overflow: hidden;
+}
+.bd-card .bd-label {
+  font-size: 9px; font-weight: 600; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
+}
+.bd-card .bd-score {
+  font-size: 20px; font-weight: 600; font-family: var(--mono);
+  color: var(--text-1);
+}
+.bd-card .bd-raw {
+  font-size: 11px; color: var(--text-2); margin-top: 2px;
+}
+.bd-bar {
+  height: 3px; background: var(--border-1);
+  border-radius: 2px; margin-top: 8px; overflow: hidden;
+}
+.bd-bar-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 0.6s var(--ease);
+}
+.bd-flag {
+  font-size: 10px; font-weight: 500; padding: 2px 6px;
+  border-radius: 4px; display: inline-block; margin-top: 6px;
+}
+.flag-ok { background: var(--green-bg); color: var(--green); }
+.flag-warn { background: var(--amber-bg); color: var(--amber); }
+.flag-bad { background: var(--red-bg); color: var(--red); }
+.flag-info { background: var(--blue-bg); color: var(--blue); }
+
+/* ── ERV SECTION ── */
+.erv-box {
+  background: var(--bg-muted); border-radius: var(--radius-lg);
+  padding: 16px 20px; margin-top: 16px;
+  border: 1px solid var(--border-1);
+}
+.erv-row {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
+}
+.erv-row:last-child { margin-bottom: 0; }
+.erv-label { font-size: 12px; color: var(--text-2); }
+.erv-val {
+  font-size: 14px; font-weight: 600; font-family: var(--mono);
+}
+.erv-divider {
+  height: 1px; background: var(--border-1); margin: 10px 0;
+}
+.erv-verdict {
+  font-size: 13px; font-weight: 600; padding: 8px 16px;
+  border-radius: var(--radius); text-align: center;
+  margin-top: 12px;
+}
+
+/* ── QUALITATIVE CHECK ── */
+.qual-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.qual-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--bg-muted);
+  border-radius: var(--radius); border: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.qual-item.qual-done { border-color: var(--border-2); }
+.qual-item-label { font-size: 12px; font-weight: 500; color: var(--text-1); }
+.qual-btns { display: flex; gap: 4px; }
+.qual-btn {
+  font-size: 10px; font-weight: 600; font-family: var(--font);
+  padding: 4px 10px; border-radius: 12px;
+  border: 1px solid var(--border-1); background: #fff;
+  cursor: pointer; color: var(--text-3);
+  transition: all 0.15s;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.qual-btn:hover { border-color: var(--border-2); color: var(--text-2); }
+.qual-btn.qb-strong { background: var(--green-bg); color: var(--green); border-color: var(--green-soft); }
+.qual-btn.qb-neutral { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-soft); }
+.qual-btn.qb-weak { background: var(--red-bg); color: var(--red); border-color: var(--red-soft); }
+.qual-pause {
+  padding: 12px 16px; border-radius: var(--radius);
+  background: var(--red-bg); border: 1px solid var(--red-soft);
+  margin-top: 12px;
+}
+.qual-pause p { font-size: 12px; color: var(--red); font-weight: 600; margin-bottom: 6px; }
+.qual-pause textarea {
+  width: 100%; font-family: var(--font); font-size: 12px;
+  border: 1px solid var(--red-soft); border-radius: 6px;
+  padding: 8px; resize: vertical; min-height: 50px;
+  outline: none; background: #fff;
+}
+
+/* ── DELIVERABLES ── */
+.deliv-box {
+  background: var(--accent-soft); border: 1px solid rgba(184,134,11,0.2);
+  border-radius: var(--radius); padding: 14px 18px; margin-top: 12px;
+}
+.deliv-title {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+}
+.deliv-item {
+  font-size: 12px; color: var(--text-2); line-height: 1.6;
+  padding-left: 14px; position: relative; margin-bottom: 2px;
+}
+.deliv-item::before {
+  content: '→'; position: absolute; left: 0; color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── NOTE BOX ── */
+.note-box {
+  font-size: 12px; padding: 10px 14px; border-radius: var(--radius);
+  margin-top: 12px; font-weight: 500; line-height: 1.5;
+  border-left: 3px solid;
+}
+.note-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
+.note-red { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+.note-green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.note-blue { background: var(--blue-bg); color: var(--blue); border-color: var(--blue); }
+
+/* ── TABLES ── */
+.ref-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.ref-table th {
+  font-size: 10px; font-weight: 600; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  text-align: left; padding: 10px 14px;
+  background: var(--bg-muted); border-bottom: 1px solid var(--border-1);
+}
+.ref-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border-1);
+  vertical-align: middle;
+}
+.ref-table tr:last-child td { border-bottom: none; }
+.ref-table tr:hover td { background: var(--bg-muted); }
+
+.pill {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.p-barter { background: var(--green-bg); color: var(--green); }
+.p-high   { background: var(--blue-bg); color: var(--blue); }
+.p-mid    { background: var(--amber-bg); color: var(--amber); }
+.p-low    { background: var(--red-bg); color: var(--red); }
+.p-cap    { background: var(--bg-muted); color: var(--text-3); }
+
+/* ── HYGIENE ── */
+.hyg-grid { display: flex; flex-direction: column; gap: 10px; }
+.hyg-card {
+  background: var(--bg-card); border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg); padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
+}
+.hyg-card:hover { box-shadow: var(--shadow-md); }
+.hyg-top {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 6px; margin-bottom: 6px;
+}
+.hyg-name { font-size: 14px; font-weight: 600; }
+.hyg-handle {
+  font-size: 12px; color: var(--text-3); font-family: var(--mono);
+  margin-left: 6px;
+}
+.hyg-score-badge {
+  font-size: 12px; font-weight: 600; font-family: var(--mono);
+  padding: 3px 12px; border-radius: 20px; background: var(--bg-muted);
+}
+.hyg-stats { font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.hyg-verdict {
+  font-size: 12px; font-weight: 500; padding: 5px 12px;
+  border-radius: var(--radius); display: inline-block; margin-top: 4px;
+}
+.hyg-sat {
+  font-size: 11px; color: var(--text-3); margin-top: 6px;
+  font-style: italic;
+}
+.delta-over { color: var(--red); font-weight: 600; }
+.delta-under { color: var(--green); font-weight: 600; }
+.delta-align { color: var(--text-3); font-weight: 500; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .header { padding: 14px 16px; }
+  .container { padding: 16px 12px 60px; }
+  .input-grid { grid-template-columns: 1fr 1fr; }
+  .breakdown-grid { grid-template-columns: 1fr 1fr; }
+  .qual-grid { grid-template-columns: 1fr; }
+  .score-hero { gap: 16px; }
+  .erv-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .tabs { gap: 0; }
+  .tab { font-size: 11px; padding: 9px 8px; }
+}
+@media (max-width: 420px) {
+  .input-grid { grid-template-columns: 1fr; }
+  .breakdown-grid { grid-template-columns: 1fr; }
+  .header-ver { display: none; }
+}
+</style>
+<script>
+// ════════════════════════════════════════════════
+// SCORING FUNCTIONS
+// ════════════════════════════════════════════════
+
+function scoreER(er) {
+  if (er >= 8)   return 10;
+  if (er >= 6)   return 9;
+  if (er >= 5)   return 8;
+  if (er >= 4)   return 7;
+  if (er >= 3)   return 6;
+  if (er >= 2)   return 4;
+  if (er >= 1.5) return 3;
+  if (er >= 1)   return 2;
+  return 1;
+}
+
+function scoreLikes(likes, followers) {
+  const cap = Math.min(followers, 500000);
+  const pct = (likes / cap) * 100;
+  let flag = 'ok';
+  if (pct > 30)  flag = 'verify-high';
+  else if (pct < 3) flag = 'low';
+  let score;
+  if (pct > 30)  score = 9;
+  else if (pct >= 10) score = 10;
+  else if (pct >= 5)  score = 7;
+  else if (pct >= 3)  score = 5;
+  else if (pct >= 1)  score = 3;
+  else score = 1;
+  return { score, flag, pct };
+}
+
+function scoreComments(comments, followers) {
+  const cap = Math.min(followers, 500000);
+  const pct = (comments / cap) * 100;
+  let flag = 'ok';
+  if (pct > 1) flag = 'verify-high';
+  else if (pct < 0.1) flag = 'low';
+  let score;
+  if (pct > 1)     score = 9;
+  else if (pct >= 0.3) score = 10;
+  else if (pct >= 0.1) score = 7;
+  else if (pct >= 0.05) score = 4;
+  else score = 1;
+  return { score, flag, pct };
+}
+
+function scoreReach(reach, followers) {
+  const pct = (reach / followers) * 100;
+  let score;
+  if (pct >= 12) score = 10;
+  else if (pct >= 9) score = 9;
+  else if (pct >= 7) score = 8;
+  else if (pct >= 5) score = 7;
+  else if (pct >= 3) score = 6;
+  else if (pct >= 2) score = 5;
+  else if (pct >= 1) score = 3;
+  else score = 1;
+  return { score, pct };
+}
+
+function scoreSaves(saves, reach) {
+  const pct = (saves / reach) * 100;
+  let score;
+  if (pct >= 1)    score = 10;
+  else if (pct >= 0.5) score = 8;
+  else if (pct >= 0.3) score = 6;
+  else if (pct >= 0.1) score = 4;
+  else score = 2;
+  return { score, pct };
+}
+
+function scoreNonFol(nf) {
+  if (nf >= 95) return 10;
+  if (nf >= 85) return 7;
+  if (nf >= 70) return 5;
+  return 2;
+}
+
+function flagHTML(f) {
+  if (f === 'verify-high') return '<span class="bd-flag flag-warn">Verify quality</span>';
+  if (f === 'low')         return '<span class="bd-flag flag-bad">Abnormally low</span>';
+  return '<span class="bd-flag flag-ok">Healthy</span>';
+}
+
+// ════════════════════════════════════════════════
+// MAIN CALCULATION
+// ════════════════════════════════════════════════
+
+var qualState = {};
+
+function liveCalc() {
+  var er = parseFloat(document.getElementById('er').value);
+  var likes = parseFloat(document.getElementById('likes').value);
+  var comments = parseFloat(document.getElementById('comments').value);
+  var followers = parseFloat(document.getElementById('followers').value);
+  var niche = document.getElementById('niche').value;
+  var reach = parseFloat(document.getElementById('reach').value);
+  var saves = parseFloat(document.getElementById('saves').value);
+  var nonfol = parseFloat(document.getElementById('nonfol').value);
+  var propRate = parseFloat(document.getElementById('prop-rate').value);
+  var propNights = parseInt(document.getElementById('prop-nights').value);
+
+  if (isNaN(er) || isNaN(followers)) return;
+
+  document.getElementById('result-area').style.display = 'block';
+
+  var hasReach = !isNaN(reach) && reach > 0;
+  var hasSaves = !isNaN(saves) && saves > 0 && hasReach;
+  var hasNonFol = !isNaN(nonfol);
+  var hasLikes = !isNaN(likes);
+  var hasComments = !isNaN(comments);
+
+  var fullMode = hasReach;
+  document.getElementById('reach-mode-note').style.display = fullMode ? 'none' : 'block';
+
+  var erS = scoreER(er);
+  var lR = hasLikes ? scoreLikes(likes, followers) : null;
+  var cR = hasComments ? scoreComments(comments, followers) : null;
+  var reachR = hasReach ? scoreReach(reach, followers) : null;
+  var savesR = hasSaves ? scoreSaves(saves, reach) : null;
+  var nonfolS = hasNonFol ? scoreNonFol(nonfol) : null;
+
+  var total;
+  var weights = {};
+  if (fullMode) {
+    var savesW = hasSaves ? 0.15 : 0;
+    var nonfolW = hasNonFol ? 0.10 : 0;
+    var reachW = 0.40 + (hasSaves ? 0 : 0.15) + (hasNonFol ? 0 : 0.05);
+    var erW = 0.35 + (hasNonFol ? 0 : 0.05);
+    var totalW = erW + reachW + savesW + nonfolW;
+    erW /= totalW; reachW /= totalW; savesW /= totalW; nonfolW /= totalW;
+
+    total = erS * erW + reachR.score * reachW;
+    if (hasSaves) total += savesR.score * savesW;
+    if (hasNonFol) total += nonfolS * nonfolW;
+    total = Math.round(total * 10) / 10;
+    weights = { er: Math.round(erW*100), reach: Math.round(reachW*100), saves: Math.round(savesW*100), nonfol: Math.round(nonfolW*100) };
+  } else {
+    var erW2 = 0.50, lW = hasLikes ? 0.30 : 0, cW = hasComments ? 0.20 : 0;
+    var tw = erW2 + lW + cW; erW2 /= tw; lW /= tw; cW /= tw;
+    total = erS * erW2;
+    if (lR) total += lR.score * lW;
+    if (cR) total += cR.score * cW;
+    total = Math.round(total * 10) / 10;
+    weights = { er: Math.round(erW2*100), likes: Math.round(lW*100), comments: Math.round(cW*100) };
+  }
+
+  var totalRound = Math.round(total);
+
+  var circumference = 2 * Math.PI * 42;
+  var offset = circumference - (totalRound / 10) * circumference;
+  var ringFill = document.getElementById('ring-fill');
+  ringFill.style.strokeDashoffset = offset;
+  var ringColor = totalRound >= 8 ? 'var(--green)' : totalRound >= 6 ? 'var(--blue)' : totalRound >= 4 ? 'var(--amber)' : 'var(--red)';
+  ringFill.style.stroke = ringColor;
+  document.getElementById('score-num').textContent = total.toFixed(1);
+
+  var bandText, bandColor;
+  if (totalRound >= 8) { bandText = 'EXCEPTIONAL'; bandColor = 'var(--green)'; }
+  else if (totalRound >= 6) { bandText = 'STRONG'; bandColor = 'var(--blue)'; }
+  else if (totalRound >= 4) { bandText = 'AVERAGE'; bandColor = 'var(--amber)'; }
+  else { bandText = 'WEAK'; bandColor = 'var(--red)'; }
+  var bandEl = document.getElementById('score-band');
+  bandEl.textContent = bandText;
+  bandEl.style.color = bandColor;
+
+  var nicheMap = {
+    high: ['flag-ok', 'High brand fit'],
+    med: ['flag-ok', 'Medium brand fit'],
+    low: ['flag-warn', 'Low brand fit'],
+    no: ['flag-bad', 'Audience mismatch']
+  };
+  var nf = nicheMap[niche];
+  document.getElementById('niche-flag-area').innerHTML = '<span class="bd-flag ' + nf[0] + '">' + nf[1] + '</span>';
+
+  var recoLabel, recoSub, recoBg, recoColor;
+  var isReject = niche === 'no' || followers < 10000;
+
+  if (isReject) {
+    recoLabel = 'Reject';
+    recoSub = niche === 'no' ? 'Audience mismatch — entertainment/meme niche' : 'Under 10k followers — minimum not met';
+    recoBg = 'var(--red-bg)'; recoColor = 'var(--red)';
+  } else {
+    if (totalRound >= 8) { recoLabel = '40–50% Discount'; recoSub = 'Exceptional — check ERV for barter eligibility'; recoBg = 'var(--green-bg)'; recoColor = 'var(--green)'; }
+    else if (totalRound >= 6) { recoLabel = '25–40% Discount'; recoSub = 'Strong performer'; recoBg = 'var(--blue-bg)'; recoColor = 'var(--blue)'; }
+    else if (totalRound >= 4) { recoLabel = '10–25% Discount'; recoSub = 'Average — review brand fit carefully'; recoBg = 'var(--amber-bg)'; recoColor = 'var(--amber)'; }
+    else { recoLabel = '10% Discount'; recoSub = 'Weak profile'; recoBg = 'var(--red-bg)'; recoColor = 'var(--red)'; }
+  }
+
+  var recoPill = document.getElementById('reco-pill');
+  recoPill.textContent = recoLabel;
+  recoPill.style.background = recoBg;
+  recoPill.style.color = recoColor;
+  document.getElementById('reco-context').textContent = recoSub;
+
+  if (!fullMode) {
+    document.getElementById('reco-context').textContent += ' · Public metrics only — unverified';
+  }
+
+  var bdGrid = document.getElementById('breakdown-grid');
+  var bdHTML = '';
+
+  bdHTML += bdCard('ER', weights.er || 35, erS, er + '%', '', erS >= 7 ? 'var(--green)' : erS >= 4 ? 'var(--amber)' : 'var(--red)', er > 10 ? '<span class="bd-flag flag-warn">Verify — &gt;10%</span>' : '');
+
+  if (fullMode) {
+    bdHTML += bdCard('Reach', weights.reach || 40, reachR.score, reachR.pct.toFixed(1) + '% of followers', Math.round(reach).toLocaleString() + ' accts', reachR.score >= 7 ? 'var(--green)' : reachR.score >= 4 ? 'var(--amber)' : 'var(--red)', '');
+    if (hasSaves) {
+      bdHTML += bdCard('Saves', weights.saves || 15, savesR.score, savesR.pct.toFixed(2) + '% of reach', Math.round(saves).toLocaleString() + ' saves', savesR.score >= 7 ? 'var(--green)' : savesR.score >= 4 ? 'var(--amber)' : 'var(--red)', '');
+    }
+    if (hasNonFol) {
+      bdHTML += bdCard('Non-fol', weights.nonfol || 10, nonfolS, nonfol + '% non-followers', '', nonfolS >= 7 ? 'var(--green)' : nonfolS >= 5 ? 'var(--amber)' : 'var(--red)', '');
+    }
+  } else {
+    if (lR) bdHTML += bdCard('Likes', weights.likes || 30, lR.score, lR.pct.toFixed(2) + '% of followers', Math.round(likes).toLocaleString() + ' avg', lR.score >= 7 ? 'var(--green)' : lR.score >= 4 ? 'var(--amber)' : 'var(--red)', flagHTML(lR.flag));
+    if (cR) bdHTML += bdCard('Comments', weights.comments || 20, cR.score, cR.pct.toFixed(3) + '% of followers', Math.round(comments).toLocaleString() + ' avg', cR.score >= 7 ? 'var(--green)' : cR.score >= 4 ? 'var(--amber)' : 'var(--red)', flagHTML(cR.flag));
+  }
+  bdGrid.innerHTML = bdHTML;
+
+  var notes = '';
+  if (!fullMode) {
+    notes += '<div class="note-box note-blue">Scoring in public-metrics-only mode (ER 50%, Likes 30%, Comments 20%). Provide reach data for the full v2 scoring and ERV analysis.</div>';
+  }
+  document.getElementById('override-notes').innerHTML = notes;
+
+  var ervSection = document.getElementById('erv-section');
+  if (hasReach && !isNaN(propRate) && propRate > 0 && !isReject) {
+    ervSection.style.display = 'block';
+    var posts = 2;
+    var totalReach = reach * posts;
+    var erv = (totalReach / 1000) * 500;
+    var stayCost = propRate * propNights;
+    var ervPct = (erv / stayCost) * 100;
+
+    document.getElementById('erv-reach').textContent = Math.round(totalReach).toLocaleString();
+    document.getElementById('erv-value').textContent = '\u20B9' + Math.round(erv).toLocaleString();
+    document.getElementById('erv-cost').textContent = '\u20B9' + Math.round(stayCost).toLocaleString();
+    document.getElementById('erv-pct').textContent = ervPct.toFixed(1) + '%';
+
+    var ervVerdict = document.getElementById('erv-verdict');
+    if (ervPct >= 100) {
+      ervVerdict.textContent = '\u2713 Full barter justified — ERV covers stay cost';
+      ervVerdict.style.background = 'var(--green-bg)'; ervVerdict.style.color = 'var(--green)';
+      recoPill.textContent = 'Full Barter'; recoPill.style.background = 'var(--green-bg)'; recoPill.style.color = 'var(--green)';
+      document.getElementById('reco-context').textContent = 'ERV \u20B9' + Math.round(erv).toLocaleString() + ' \u2265 stay cost \u20B9' + Math.round(stayCost).toLocaleString();
+    } else if (ervPct >= 70) {
+      ervVerdict.textContent = '40\u201350% discount — ERV covers ' + ervPct.toFixed(0) + '% of stay';
+      ervVerdict.style.background = 'var(--blue-bg)'; ervVerdict.style.color = 'var(--blue)';
+      recoPill.textContent = '40\u201350% Discount'; recoPill.style.background = 'var(--blue-bg)'; recoPill.style.color = 'var(--blue)';
+      document.getElementById('reco-context').textContent = 'ERV covers ' + ervPct.toFixed(0) + '% of \u20B9' + Math.round(stayCost).toLocaleString() + ' stay cost';
+    } else if (ervPct >= 40) {
+      ervVerdict.textContent = '20\u201340% discount — ERV covers ' + ervPct.toFixed(0) + '% of stay';
+      ervVerdict.style.background = 'var(--amber-bg)'; ervVerdict.style.color = 'var(--amber)';
+      recoPill.textContent = '20\u201340% Discount'; recoPill.style.background = 'var(--amber-bg)'; recoPill.style.color = 'var(--amber)';
+      document.getElementById('reco-context').textContent = 'ERV covers ' + ervPct.toFixed(0) + '% of \u20B9' + Math.round(stayCost).toLocaleString() + ' stay cost';
+    } else if (ervPct >= 20) {
+      ervVerdict.textContent = '10\u201320% discount — ERV covers only ' + ervPct.toFixed(0) + '%';
+      ervVerdict.style.background = 'var(--amber-bg)'; ervVerdict.style.color = 'var(--amber)';
+      recoPill.textContent = '10\u201320% Discount'; recoPill.style.background = 'var(--amber-bg)'; recoPill.style.color = 'var(--amber)';
+      document.getElementById('reco-context').textContent = 'ERV covers only ' + ervPct.toFixed(0) + '% of stay cost';
+    } else {
+      ervVerdict.textContent = '10% discount or decline — ERV covers only ' + ervPct.toFixed(0) + '%';
+      ervVerdict.style.background = 'var(--red-bg)'; ervVerdict.style.color = 'var(--red)';
+      recoPill.textContent = '10% or Decline'; recoPill.style.background = 'var(--red-bg)'; recoPill.style.color = 'var(--red)';
+      document.getElementById('reco-context').textContent = 'ERV covers only ' + ervPct.toFixed(0) + '% — poor return on investment';
+    }
+  } else {
+    ervSection.style.display = 'none';
+  }
+
+  var delivSection = document.getElementById('deliv-section');
+  if (!isReject) {
+    var currentReco = recoPill.textContent;
+    var delivItems = [];
+    if (currentReco.indexOf('Barter') !== -1) {
+      delivItems = [
+        'Minimum 2 Reels (15\u201360 sec each)',
+        '1 Story series (3+ frames)',
+        'Tisya tagged as collaborator on all posts',
+        'Property name in caption with CTA to Tisya profile',
+        'Creator shares post insights within 7 days of posting'
+      ];
+    } else if (currentReco.indexOf('40') !== -1 || currentReco.indexOf('50') !== -1) {
+      delivItems = [
+        'Minimum 1 Reel + 1 Story series',
+        'Tisya tagged as collaborator',
+        'Property name in caption',
+        'Creator shares post insights within 7 days'
+      ];
+    } else if (currentReco.indexOf('20') !== -1 || currentReco.indexOf('25') !== -1 || currentReco.indexOf('30') !== -1) {
+      delivItems = [
+        'Minimum 1 Reel or 1 Story series',
+        'Tisya tagged in post',
+        'Share insights within 7 days'
+      ];
+    } else {
+      delivItems = [
+        '1 Story mention minimum',
+        'Tisya tagged'
+      ];
+    }
+    delivSection.style.display = 'block';
+    delivSection.innerHTML = '<div class="section-label">Standard deliverables</div><div class="deliv-box"><div class="deliv-title">Expected deliverables for ' + currentReco + '</div>' + delivItems.map(function(d) { return '<div class="deliv-item">' + d + '</div>'; }).join('') + '</div>';
+  } else {
+    delivSection.style.display = 'none';
+  }
+
+  buildQualCheck();
+}
+
+function bdCard(label, weight, score, raw, sub, barColor, flagHtml) {
+  return '<div class="bd-card"><div class="bd-label">' + label + ' \u00B7 ' + weight + '%</div><div class="bd-score">' + score + '<small style="font-size:12px;color:var(--text-3)">/10</small></div><div class="bd-raw">' + raw + '</div>' + (sub ? '<div class="bd-raw" style="color:var(--text-3)">' + sub + '</div>' : '') + '<div class="bd-bar"><div class="bd-bar-fill" style="width:' + (score*10) + '%;background:' + barColor + '"></div></div>' + (flagHtml || '') + '</div>';
+}
+
+// ════════════════════════════════════════════════
+// QUALITATIVE CHECK
+// ════════════════════════════════════════════════
+
+var QUAL_FACTORS = [
+  { id: 'vibe', label: 'Content vibe & aesthetic' },
+  { id: 'freq', label: 'Posting frequency (8+/mo)' },
+  { id: 'comqual', label: 'Comment quality' },
+  { id: 'growth', label: 'Follower growth trend' },
+  { id: 'brandfit', label: 'Brand fit (travel/luxury)' },
+  { id: 'adratio', label: 'Content-to-ad ratio (<40% ads)' }
+];
+
+function buildQualCheck() {
+  var grid = document.getElementById('qual-grid');
+  grid.innerHTML = QUAL_FACTORS.map(function(f) {
+    return '<div class="qual-item ' + (qualState[f.id] ? 'qual-done' : '') + '" id="qi-' + f.id + '"><span class="qual-item-label">' + f.label + '</span><div class="qual-btns"><button class="qual-btn ' + (qualState[f.id]==='strong'?'qb-strong':'') + '" onclick="setQual(\'' + f.id + '\',\'strong\')">Strong</button><button class="qual-btn ' + (qualState[f.id]==='neutral'?'qb-neutral':'') + '" onclick="setQual(\'' + f.id + '\',\'neutral\')">Neutral</button><button class="qual-btn ' + (qualState[f.id]==='weak'?'qb-weak':'') + '" onclick="setQual(\'' + f.id + '\',\'weak\')">Weak</button></div></div>';
+  }).join('');
+  updateQualResult();
+}
+
+function setQual(id, val) {
+  qualState[id] = val;
+  buildQualCheck();
+}
+
+function updateQualResult() {
+  var res = document.getElementById('qual-result');
+  var filled = Object.keys(qualState).length;
+  var weakCount = 0;
+  for (var k in qualState) { if (qualState[k] === 'weak') weakCount++; }
+
+  if (filled < 6) {
+    res.innerHTML = '<div class="note-box note-blue" style="margin-top:12px;">Complete all 6 factors to finalise the qualitative check. ' + filled + '/6 done.</div>';
+    return;
+  }
+
+  if (weakCount >= 4) {
+    res.innerHTML = '<div class="qual-pause"><p>\u26A0 Recommendation paused \u2014 ' + weakCount + '/6 factors rated weak</p><label style="font-size:11px;color:var(--red);display:block;margin-bottom:4px;">To proceed, provide written justification:</label><textarea placeholder="Why should this collaboration proceed despite qualitative concerns?"></textarea></div>';
+  } else if (weakCount >= 2) {
+    res.innerHTML = '<div class="note-box note-amber" style="margin-top:12px;">' + weakCount + ' weak factors \u2014 proceed with caution. Consider reducing offer by one tier.</div>';
+  } else {
+    res.innerHTML = '<div class="note-box note-green" style="margin-top:12px;">Qualitative check passed. ' + (6-weakCount) + '/6 factors strong or neutral.</div>';
+  }
+}
+
+// ════════════════════════════════════════════════
+// RESET
+// ════════════════════════════════════════════════
+
+function resetForm() {
+  ['inf-name','followers','er','likes','comments','reach','saves','nonfol','prop-rate'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('niche').selectedIndex = 0;
+  document.getElementById('prop-nights').selectedIndex = 0;
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('reach-mode-note').style.display = 'none';
+  qualState = {};
+}
+
+// ════════════════════════════════════════════════
+// HYGIENE CHECK — with persistent storage
+// ════════════════════════════════════════════════
+
+var SEED_DATA = [
+  { name:"Riyaz Aly", handle:"@riyaz.14", followers:27000000, er:1.03, likes:276000, comments:3551, reach:7335, given:"Full Barter", satisfaction:"Overpaid \u2014 follower-blinded", seed:true },
+  { name:"Yash Sehgal", handle:"@iamyashsehgal", followers:1000000, er:1.59, likes:19000, comments:76, reach:null, given:"Full Barter", satisfaction:"Unhappy \u2014 overpaid", seed:true },
+  { name:"Debchandrima", handle:"@debchandrima_official", followers:884000, er:6.36, likes:56000, comments:252, reach:null, given:"Prospect", satisfaction:"Would have been happy with 50%", seed:true },
+  { name:"Pooja Sharma", handle:"@pooja__sharmaaaa", followers:552000, er:null, likes:null, comments:null, reach:43000, given:"Full Barter", satisfaction:"Strong reach performer \u2014 43k accounts reached", seed:true },
+  { name:"Pujjaa (Pallavi)", handle:"@pallavipallu1", followers:245000, er:5.32, likes:13000, comments:117, reach:13747, given:"Full Barter", satisfaction:"Between barter and 50%", seed:true },
+  { name:"Yash Kadam", handle:"@yash.kadam23", followers:222000, er:7.70, likes:17000, comments:143, reach:26785, given:"Full Barter", satisfaction:"Satisfied \u2014 496 profile visits, best commercial outcome", seed:true },
+  { name:"Moon", handle:"@moonkovers", followers:230000, er:3.83, likes:9000, comments:60, reach:null, given:"Prospect", satisfaction:"Would have been happy with 20%", seed:true },
+  { name:"Aashna Arora", handle:"@_aashnnaaa_", followers:110000, er:5.49, likes:6000, comments:96, reach:null, given:"30% Discount", satisfaction:"Happy", seed:true },
+  { name:"Aanchal Patel", handle:"@nonsaneee_", followers:67000, er:1.25, likes:823, comments:11, reach:null, given:"10% Discount", satisfaction:"Noted", seed:true },
+  { name:"Ishika Gujral", handle:"@ifeelishq_", followers:37000, er:0.72, likes:262, comments:4, reach:null, given:"10% Discount", satisfaction:"Very satisfied \u2014 exceeded expectations", seed:true },
+  { name:"Shweta Verma", handle:"@shweta_v24", followers:32000, er:0.41, likes:95, comments:39, reach:null, given:"\u2014", satisfaction:"\u2014", seed:true }
+];
+
+var STORAGE_KEY = 'tisya_hygiene_log';
+
+function getCustomEntries() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveCustomEntries(entries) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+function getAllEntries() {
+  return SEED_DATA.concat(getCustomEntries());
+}
+
+function logCollab() {
+  var name = document.getElementById('log-name').value.trim();
+  var handle = document.getElementById('log-handle').value.trim();
+  var followers = parseFloat(document.getElementById('log-followers').value);
+  var er = parseFloat(document.getElementById('log-er').value);
+  var likes = parseFloat(document.getElementById('log-likes').value);
+  var comments = parseFloat(document.getElementById('log-comments').value);
+  var reach = parseFloat(document.getElementById('log-reach').value);
+  var given = document.getElementById('log-given').value;
+  var satisfaction = document.getElementById('log-satisfaction').value.trim();
+  var msg = document.getElementById('log-msg');
+
+  if (!name || !handle || isNaN(followers)) {
+    msg.innerHTML = '<div class="note-box note-red" style="margin-top:0;">Name, handle, and followers are required.</div>';
+    return;
+  }
+
+  var entry = {
+    name: name,
+    handle: handle.charAt(0) === '@' ? handle : '@' + handle,
+    followers: followers,
+    er: isNaN(er) ? null : er,
+    likes: isNaN(likes) ? null : likes,
+    comments: isNaN(comments) ? null : comments,
+    reach: isNaN(reach) || reach <= 0 ? null : reach,
+    given: given,
+    satisfaction: satisfaction || '\u2014',
+    seed: false,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  var custom = getCustomEntries();
+  custom.push(entry);
+  saveCustomEntries(custom);
+
+  ['log-name','log-handle','log-followers','log-er','log-likes','log-comments','log-reach','log-satisfaction'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('log-given').selectedIndex = 5;
+
+  msg.innerHTML = '<div class="note-box note-green" style="margin-top:0;">Saved: ' + entry.name + ' \u2014 ' + custom.length + ' custom entries logged. Total: ' + (SEED_DATA.length + custom.length) + '.</div>';
+  setTimeout(function() { msg.innerHTML = ''; }, 4000);
+
+  buildHygiene();
+}
+
+function exportLog() {
+  var all = getAllEntries();
+  var blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'tisya_influencer_log_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearCustomLog() {
+  var custom = getCustomEntries();
+  if (custom.length === 0) return;
+  if (!confirm('Remove ' + custom.length + ' custom entries? Seed data (original 11) will remain.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  buildHygiene();
+  document.getElementById('log-msg').innerHTML = '<div class="note-box note-amber" style="margin-top:0;">Custom entries cleared. Seed data retained.</div>';
+  setTimeout(function() { document.getElementById('log-msg').innerHTML = ''; }, 3000);
+}
+
+function v1Score(p) {
+  var erS = scoreER(p.er || 0);
+  var lR = scoreLikes(p.likes || 0, p.followers);
+  var cR = scoreComments(p.comments || 0, p.followers);
+  return Math.round(erS * 0.5 + lR.score * 0.3 + cR.score * 0.2);
+}
+
+function v1Reco(score, followers) {
+  if (followers < 10000) return '10%';
+  if (score >= 8) return '40\u201350%';
+  if (score >= 6) return '25\u201340%';
+  if (score >= 4) return '10\u201325%';
+  return '10%';
+}
+
+function tierRank(label) {
+  if (label === 'Full Barter') return 5;
+  if (label.indexOf('50') !== -1 || label.indexOf('40') !== -1) return 4;
+  if (label.indexOf('30') !== -1 || label.indexOf('25') !== -1 || label.indexOf('20') !== -1) return 3;
+  if (label.indexOf('10') !== -1) return 2;
+  if (label.indexOf('5') !== -1) return 1;
+  return 0;
+}
+
+function deleteEntry(customIdx) {
+  var custom = getCustomEntries();
+  if (customIdx < 0 || customIdx >= custom.length) return;
+  var entry = custom[customIdx];
+  if (!confirm('Remove ' + entry.name + ' from the log?')) return;
+  custom.splice(customIdx, 1);
+  saveCustomEntries(custom);
+  buildHygiene();
+}
+
+function buildHygiene() {
+  var container = document.getElementById('hyg-rows');
+  container.innerHTML = '';
+  var all = getAllEntries();
+  var custom = getCustomEntries();
+
+  var counter = document.getElementById('hyg-counter');
+  counter.textContent = SEED_DATA.length + ' seed + ' + custom.length + ' logged = ' + all.length + ' total entries';
+
+  for (var i = 0; i < all.length; i++) {
+    var p = all[i];
+    var score = v1Score(p);
+    var model = v1Reco(score, p.followers);
+    var given = p.given;
+    var gRank = tierRank(given);
+    var mRank = tierRank(model);
+    var delta = gRank - mRank;
+
+    var ervNote = '';
+    if (p.reach) {
+      var erv = (p.reach * 2 / 1000) * 500;
+      ervNote = ' \u00B7 ERV \u20B9' + Math.round(erv).toLocaleString() + ' (' + p.reach.toLocaleString() + ' reach/post)';
+    }
+
+    var deltaHTML, verdictHTML;
+    if (given === 'Prospect' || given === '\u2014' || given === '—') {
+      deltaHTML = '<span class="delta-align">Prospect \u2014 no collab</span>';
+      verdictHTML = '<span class="hyg-verdict" style="background:var(--bg-muted);color:var(--text-3)">Model: ' + model + '</span>';
+    } else if (delta > 0) {
+      deltaHTML = '<span class="delta-over">We offered more than recommended</span>';
+      verdictHTML = '<span class="hyg-verdict" style="background:var(--red-bg);color:var(--red)">Model: ' + model + ' \u00B7 Actual: ' + given + '</span>';
+    } else if (delta < 0) {
+      deltaHTML = '<span class="delta-under">Good value \u2014 we offered less</span>';
+      verdictHTML = '<span class="hyg-verdict" style="background:var(--green-bg);color:var(--green)">Model: ' + model + ' \u00B7 Actual: ' + given + '</span>';
+    } else {
+      deltaHTML = '<span class="delta-align">Aligned</span>';
+      verdictHTML = '<span class="hyg-verdict" style="background:var(--bg-muted);color:var(--text-3)">Model: ' + model + ' \u00B7 Actual: ' + given + '</span>';
+    }
+
+    var sourceTag = p.seed ? '' : '<span style="font-size:10px;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:10px;font-weight:600;margin-left:8px;">NEW' + (p.date ? ' \u00B7 ' + p.date : '') + '</span>';
+    var customIdx = i - SEED_DATA.length;
+    var deleteBtn = p.seed ? '' : '<button onclick="deleteEntry(' + customIdx + ')" style="font-size:10px;color:var(--red);background:none;border:1px solid var(--red-soft);border-radius:6px;padding:2px 8px;cursor:pointer;font-family:var(--font);font-weight:500;" title="Remove this entry">\u2715</button>';
+
+    container.innerHTML += '<div class="hyg-card"><div class="hyg-top"><div><span class="hyg-name">' + p.name + '</span><span class="hyg-handle">' + p.handle + '</span>' + sourceTag + '</div><div style="display:flex;align-items:center;gap:8px;"><span class="hyg-score-badge">' + score + '/10</span>' + deleteBtn + '</div></div><div class="hyg-stats">' + p.followers.toLocaleString() + ' followers \u00B7 ER ' + (p.er || '\u2014') + '%' + ervNote + ' \u00B7 ' + deltaHTML + '</div>' + verdictHTML + '<div class="hyg-sat">' + p.satisfaction + '</div></div>';
+  }
+}
+
+// ════════════════════════════════════════════════
+// ERV REFERENCE TABLE
+// ════════════════════════════════════════════════
+
+function buildERVRef() {
+  var tiers = [
+    { name: 'Entry (Studio/1BHK)', rate: 4000 },
+    { name: 'Low-mid', rate: 8000 },
+    { name: 'Mid', rate: 15000 },
+    { name: 'High-mid', rate: 20000 },
+    { name: 'Premium villa', rate: 40000 },
+    { name: 'Flagship villa', rate: 60000 }
+  ];
+  var body = document.getElementById('erv-ref-body');
+  body.innerHTML = tiers.map(function(t) {
+    var cost = t.rate * 2;
+    var reqReach = Math.ceil(cost / 500 * 1000);
+    var perPost = Math.ceil(reqReach / 2);
+    return '<tr><td>' + t.name + '</td><td>\u20B9' + t.rate.toLocaleString() + '/night</td><td>\u20B9' + cost.toLocaleString() + '</td><td><strong>' + perPost.toLocaleString() + '</strong> accounts</td></tr>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════
+
+function switchTab(id) {
+  var tabs = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  for (var j = 0; j < panels.length; j++) panels[j].classList.remove('active');
+  var tabIds = ['score','scale','erv','hygiene','template'];
+  var idx = tabIds.indexOf(id);
+  tabs[idx].classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+  if (id === 'hygiene') buildHygiene();
+  if (id === 'erv') buildERVRef();
+}
+
+function copyTemplate() {
+  var text = document.getElementById('template-text').innerText;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.style.background = 'var(--green)';
+    setTimeout(function() {
+      btn.textContent = 'Copy message';
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  buildERVRef();
+});
+</script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-mark">TS</div>
+    <div class="header-text">
+      <h1>Tisya Stays</h1>
+      <span>Influencer Scoring Framework</span>
+    </div>
+  </div>
+  <div class="header-ver">v2.0 · ERV MODEL</div>
+</div>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" onclick="switchTab('score')" role="tab">Score influencer</button>
+    <button class="tab" onclick="switchTab('scale')" role="tab">Scoring scale</button>
+    <button class="tab" onclick="switchTab('erv')" role="tab">ERV reference</button>
+    <button class="tab" onclick="switchTab('hygiene')" role="tab">Hygiene check</button>
+    <button class="tab" onclick="switchTab('template')" role="tab">Outreach template</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- TAB 1: SCORE -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="panel-score" class="panel active">
+
+    <div class="section-label">Influencer details</div>
+    <div class="card">
+      <div class="input-grid">
+        <div class="field">
+          <label>Name / handle</label>
+          <input type="text" id="inf-name" placeholder="@handle">
+        </div>
+        <div class="field">
+          <label>Followers</label>
+          <input type="number" id="followers" placeholder="e.g. 222000" oninput="liveCalc()">
+        </div>
+        <div class="field">
+          <label>Niche</label>
+          <select id="niche" onchange="liveCalc()">
+            <option value="high">Home / lifestyle / daily routine</option>
+            <option value="med">Travel / luxury</option>
+            <option value="low">Fashion / beauty</option>
+            <option value="no">Entertainment / meme</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Performance metrics</div>
+    <div class="card">
+      <div class="input-grid">
+        <div class="field">
+          <label>Engagement rate (%)</label>
+          <input type="number" id="er" step="0.01" placeholder="e.g. 7.70" oninput="liveCalc()">
+          <span class="field-hint">Weight: 35%</span>
+        </div>
+        <div class="field">
+          <label>Avg likes per post</label>
+          <input type="number" id="likes" placeholder="e.g. 17000" oninput="liveCalc()">
+        </div>
+        <div class="field">
+          <label>Avg comments per post</label>
+          <input type="number" id="comments" placeholder="e.g. 143" oninput="liveCalc()">
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Reach metrics (from influencer insights)</div>
+    <div class="card">
+      <div class="input-grid">
+        <div class="field">
+          <label>Avg accounts reached / post</label>
+          <input type="number" id="reach" placeholder="e.g. 43000" oninput="liveCalc()">
+          <span class="field-hint">Weight: 40% · From insights screenshots</span>
+        </div>
+        <div class="field">
+          <label>Avg saves per post</label>
+          <input type="number" id="saves" placeholder="e.g. 209" oninput="liveCalc()">
+          <span class="field-hint">Weight: 15% · Min 3 posts for scoring</span>
+        </div>
+        <div class="field">
+          <label>Non-follower reach (%)</label>
+          <input type="number" id="nonfol" step="0.1" placeholder="e.g. 99.6" oninput="liveCalc()">
+          <span class="field-hint">Weight: 10%</span>
+        </div>
+      </div>
+      <div id="reach-mode-note" class="note-box note-blue" style="display:none; margin-top:12px;">
+        Reach metrics not provided — scoring in public-metrics-only mode. ER/likes/comments weighted 50/30/20. Result is flagged as unverified.
+      </div>
+    </div>
+
+    <div class="section-label">Barter viability (ERV check)</div>
+    <div class="card">
+      <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="field">
+          <label>Property nightly rate (₹)</label>
+          <input type="number" id="prop-rate" placeholder="e.g. 20000" oninput="liveCalc()">
+        </div>
+        <div class="field">
+          <label>Number of nights</label>
+          <select id="prop-nights" onchange="liveCalc()">
+            <option value="2" selected>2 nights (standard)</option>
+            <option value="3">3 nights</option>
+            <option value="1">1 night</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; display:flex; gap:10px; align-items:center;">
+      <button class="btn" onclick="liveCalc()">Calculate score ↗</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetForm()">Reset</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="result-area" style="display:none;">
+
+      <div class="section-label">Score result</div>
+      <div class="card">
+        <div class="score-hero">
+          <div class="score-ring">
+            <svg viewBox="0 0 100 100">
+              <circle class="score-ring-bg" cx="50" cy="50" r="42"/>
+              <circle id="ring-fill" class="score-ring-fill" cx="50" cy="50" r="42"
+                stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+            </svg>
+            <div class="score-ring-num"><span id="score-num">—</span><small>/10</small></div>
+          </div>
+          <div class="score-meta">
+            <div id="score-band" class="score-band">—</div>
+            <div id="reco-pill" class="reco-pill">—</div>
+            <div id="reco-context" class="reco-context"></div>
+          </div>
+          <div id="niche-flag-area"></div>
+        </div>
+
+        <div class="breakdown-grid" id="breakdown-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <div id="override-notes"></div>
+
+      <!-- ERV BOX -->
+      <div id="erv-section" style="display:none;">
+        <div class="section-label">Expected return value (ERV)</div>
+        <div class="card">
+          <div class="erv-box">
+            <div class="erv-row">
+              <span class="erv-label">Expected total reach (2 posts)</span>
+              <span class="erv-val" id="erv-reach">—</span>
+            </div>
+            <div class="erv-row">
+              <span class="erv-label">ERV @ ₹500 / 1,000 reached</span>
+              <span class="erv-val" id="erv-value">—</span>
+            </div>
+            <div class="erv-divider"></div>
+            <div class="erv-row">
+              <span class="erv-label">Stay cost (rack rate)</span>
+              <span class="erv-val" id="erv-cost">—</span>
+            </div>
+            <div class="erv-row">
+              <span class="erv-label">ERV as % of stay cost</span>
+              <span class="erv-val" id="erv-pct">—</span>
+            </div>
+            <div id="erv-verdict" class="erv-verdict">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUALITATIVE CHECK -->
+      <div class="section-label">Qualitative check</div>
+      <div class="card">
+        <p style="font-size:12px; color:var(--text-2); margin-bottom:12px; line-height:1.5;">
+          Rate each factor before finalising. 4+ weak = recommendation paused.
+        </p>
+        <div class="qual-grid" id="qual-grid"></div>
+        <div id="qual-result"></div>
+      </div>
+
+      <!-- DELIVERABLES -->
+      <div id="deliv-section" style="display:none;"></div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- TAB 2: SCORING SCALE -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="panel-scale" class="panel">
+
+    <div class="section-label">Score → collaboration mapping</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>Score</th><th>Rating</th><th>Offer (with reach data)</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td>8 – 10</td><td>Exceptional</td><td><span class="pill p-barter">Full barter (ERV ≥ 100% stay cost)</span></td><td>Reach data required · Property-specific</td></tr>
+          <tr><td>8 – 10</td><td>Exceptional</td><td><span class="pill p-high">40 – 50% discount</span></td><td>ERV 70–99% of stay cost</td></tr>
+          <tr><td>6 – 8</td><td>Strong</td><td><span class="pill p-high">25 – 40% discount</span></td><td>ERV 40–69% of stay cost</td></tr>
+          <tr><td>4 – 6</td><td>Average</td><td><span class="pill p-mid">10 – 25% discount</span></td><td>ERV 20–39% of stay cost</td></tr>
+          <tr><td>1 – 4</td><td>Weak</td><td><span class="pill p-low">10% discount or decline</span></td><td>ERV < 20%</td></tr>
+          <tr><td>Any</td><td>—</td><td><span class="pill p-cap">Reject</span></td><td>Entertainment/meme niche · Under 10k followers</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Engagement rate benchmarks (Indian accounts)</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>ER range</th><th>Interpretation</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>≥ 8%</td><td>Exceptional · flag if &gt;10%</td><td>10</td></tr>
+          <tr><td>6 – 8%</td><td>Very strong</td><td>9</td></tr>
+          <tr><td>5 – 6%</td><td>Strong</td><td>8</td></tr>
+          <tr><td>4 – 5%</td><td>Above average</td><td>7</td></tr>
+          <tr><td>3 – 4%</td><td>Average</td><td>6</td></tr>
+          <tr><td>2 – 3%</td><td>Below average</td><td>4</td></tr>
+          <tr><td>1.5 – 2%</td><td>Weak</td><td>3</td></tr>
+          <tr><td>1 – 1.5%</td><td>Poor</td><td>2</td></tr>
+          <tr><td>&lt; 1%</td><td>Likely inflated followers</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Reach-per-follower benchmarks</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>Reach / followers</th><th>Interpretation</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>≥ 12%</td><td>Exceptional distribution</td><td>10</td></tr>
+          <tr><td>9 – 12%</td><td>Very strong</td><td>9</td></tr>
+          <tr><td>7 – 9%</td><td>Strong</td><td>8</td></tr>
+          <tr><td>5 – 7%</td><td>Good</td><td>7</td></tr>
+          <tr><td>3 – 5%</td><td>Average</td><td>6</td></tr>
+          <tr><td>2 – 3%</td><td>Below average</td><td>5</td></tr>
+          <tr><td>1 – 2%</td><td>Weak</td><td>3</td></tr>
+          <tr><td>&lt; 1%</td><td>Very poor reach</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Likes & comments health ranges</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>Metric</th><th>% of followers</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr><td>Likes</td><td>&gt; 30%</td><td>Flag for verification — unusually high</td></tr>
+          <tr><td>Likes</td><td>10 – 30%</td><td>Healthy and consistent</td></tr>
+          <tr><td>Likes</td><td>3 – 10%</td><td>Acceptable (large accounts skew lower)</td></tr>
+          <tr><td>Likes</td><td>&lt; 3%</td><td>Abnormally low</td></tr>
+          <tr><td>Comments</td><td>&gt; 1%</td><td>Flag for verification</td></tr>
+          <tr><td>Comments</td><td>0.1 – 1%</td><td>Healthy range</td></tr>
+          <tr><td>Comments</td><td>&lt; 0.1%</td><td>Passive or inflated audience</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-box note-blue" style="margin-top:16px;">
+      Accounts with 1M+ followers are capped at 500k for likes/comments % scoring. Mega-accounts naturally show lower ratios without indicating poor quality.
+    </div>
+
+    <div class="section-label">Saves-to-reach benchmarks</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>Saves / reach</th><th>Interpretation</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>≥ 1%</td><td>Exceptional intent signal</td><td>10</td></tr>
+          <tr><td>0.5 – 1%</td><td>Strong</td><td>8</td></tr>
+          <tr><td>0.3 – 0.5%</td><td>Good</td><td>6</td></tr>
+          <tr><td>0.1 – 0.3%</td><td>Average</td><td>4</td></tr>
+          <tr><td>&lt; 0.1%</td><td>Low intent</td><td>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Non-follower reach benchmarks</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>Non-follower %</th><th>Interpretation</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>≥ 95%</td><td>Excellent discovery</td><td>10</td></tr>
+          <tr><td>85 – 95%</td><td>Strong</td><td>7</td></tr>
+          <tr><td>70 – 85%</td><td>Average</td><td>5</td></tr>
+          <tr><td>&lt; 70%</td><td>Mostly existing audience</td><td>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- TAB 3: ERV REFERENCE -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="panel-erv" class="panel">
+
+    <div class="section-label">ERV model explained</div>
+    <div class="card">
+      <p style="font-size:13px; color:var(--text-2); line-height:1.7; margin-bottom:12px;">
+        Expected Return Value (ERV) converts influencer reach into a rupee figure comparable to what Tisya would spend on Meta ads for equivalent exposure. This makes barter a financial decision, not a social media decision.
+      </p>
+      <div style="background:var(--bg-muted); border-radius:var(--radius); padding:14px 18px; font-family:var(--mono); font-size:13px; color:var(--text-1); line-height:1.8;">
+        ERV = (accounts reached × posts) ÷ 1,000 × ₹500<br>
+        Barter viable when: ERV ≥ stay cost
+      </div>
+      <p style="font-size:12px; color:var(--text-3); margin-top:10px; line-height:1.6;">
+        ₹500/1,000 reached = 2× Meta CPC (₹65) organic premium. Accounts trust, follower acquisition value, and brand association premium over cold ad clicks.
+      </p>
+    </div>
+
+    <div class="section-label">Barter reach thresholds by property tier (2 nights, 2 posts)</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>Property tier</th><th>Nightly rate</th><th>Stay cost</th><th>Min reach/post for barter</th></tr></thead>
+        <tbody id="erv-ref-body"></tbody>
+      </table>
+    </div>
+
+    <div class="section-label">ERV → offer mapping</div>
+    <div class="card card-flush">
+      <table class="ref-table">
+        <thead><tr><th>ERV as % of stay cost</th><th>Recommended offer</th></tr></thead>
+        <tbody>
+          <tr><td>≥ 100%</td><td><span class="pill p-barter">Full barter</span></td></tr>
+          <tr><td>70 – 99%</td><td><span class="pill p-high">40 – 50% discount</span></td></tr>
+          <tr><td>40 – 69%</td><td><span class="pill p-high">20 – 40% discount</span></td></tr>
+          <tr><td>20 – 39%</td><td><span class="pill p-mid">10 – 20% discount</span></td></tr>
+          <tr><td>&lt; 20%</td><td><span class="pill p-low">10% discount or decline</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-box note-amber" style="margin-top:16px;">
+      ERV thresholds are calibrated on n=4 past collaborations (as of launch). Recalibrate after every 5 new data points. Current calibration date: May 2026.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- TAB 4: HYGIENE CHECK -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="panel-hygiene" class="panel">
+    <div class="section-label">Collaboration log &amp; hygiene check</div>
+    <p style="font-size:12px; color:var(--text-2); margin-bottom:8px; line-height:1.5;">
+      Model recommendation vs actual offer.
+      <span class="delta-over">Red</span> = overpaid.
+      <span class="delta-under">Green</span> = good value.
+      Grey = aligned or prospect.
+    </p>
+    <div id="hyg-counter" style="font-size:12px; color:var(--text-3); margin-bottom:16px; font-family:var(--mono); font-weight:500;"></div>
+
+    <!-- LOG NEW COLLAB -->
+    <details class="card" style="margin-bottom:20px; cursor:pointer;">
+      <summary style="font-size:13px; font-weight:600; color:var(--text-1); padding:4px 0; list-style:none; display:flex; align-items:center; gap:8px;">
+        <span style="font-size:18px; color:var(--accent);">+</span> Log a new collaboration
+      </summary>
+      <div style="margin-top:16px;">
+        <div class="input-grid" style="margin-bottom:12px;">
+          <div class="field"><label>Name</label><input type="text" id="log-name" placeholder="e.g. Priya Singh"></div>
+          <div class="field"><label>Handle</label><input type="text" id="log-handle" placeholder="e.g. @priya.travels"></div>
+          <div class="field"><label>Followers</label><input type="number" id="log-followers" placeholder="e.g. 150000"></div>
+        </div>
+        <div class="input-grid" style="margin-bottom:12px;">
+          <div class="field"><label>Engagement rate (%)</label><input type="number" id="log-er" step="0.01" placeholder="e.g. 5.2"></div>
+          <div class="field"><label>Avg likes / post</label><input type="number" id="log-likes" placeholder="e.g. 8000"></div>
+          <div class="field"><label>Avg comments / post</label><input type="number" id="log-comments" placeholder="e.g. 95"></div>
+        </div>
+        <div class="input-grid" style="margin-bottom:12px;">
+          <div class="field">
+            <label>Accounts reached / post</label>
+            <input type="number" id="log-reach" placeholder="Optional">
+            <span class="field-hint">From insights if available</span>
+          </div>
+          <div class="field">
+            <label>What was offered</label>
+            <select id="log-given">
+              <option value="Full Barter">Full barter</option>
+              <option value="50% Discount">50% discount</option>
+              <option value="40% Discount">40% discount</option>
+              <option value="30% Discount">30% discount</option>
+              <option value="20% Discount">20% discount</option>
+              <option value="10% Discount" selected>10% discount</option>
+              <option value="Prospect">Prospect (no collab)</option>
+              <option value="—">None</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Satisfaction / notes</label>
+            <input type="text" id="log-satisfaction" placeholder="e.g. Happy with results">
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="logCollab()">Save to log</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportLog()">Export all as JSON</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--red); border-color:var(--red-soft);" onclick="clearCustomLog()">Clear added entries</button>
+        </div>
+        <div id="log-msg" style="margin-top:8px;"></div>
+      </div>
+    </details>
+
+    <div class="hyg-grid" id="hyg-rows"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- TAB 5: OUTREACH TEMPLATE -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="panel-template" class="panel">
+    <div class="section-label">Standard outreach message</div>
+    <p style="font-size:12px; color:var(--text-2); margin-bottom:16px; line-height:1.5;">
+      Copy and send this to every influencer or prospective collaborator when they reach out. Replace [Name] with their name.
+    </p>
+    <div class="card" style="position:relative;">
+      <button class="btn btn-sm" onclick="copyTemplate()" id="copy-btn" style="position:absolute; top:16px; right:16px;">Copy message</button>
+      <pre id="template-text" style="font-family:var(--font); font-size:13px; color:var(--text-1); line-height:1.7; white-space:pre-wrap; word-wrap:break-word; margin:0; padding-right:120px;">Hi [Name],
+
+Thank you for your interest in collaborating with Tisya Stays! We're excited to explore this further.
+
+To help us assess the right kind of collaboration for you, we need a few details upfront. Please share the following:
+
+&#x1F4CA; PUBLIC PROFILE INFO
+&#x2022; Instagram handle
+&#x2022; Total followers
+&#x2022; Content niche (travel / lifestyle / fashion / other)
+
+&#x1F4F1; INSTAGRAM INSIGHTS (only visible to you as the account owner)
+Please send screenshots of Insights from your 3 most recent reels or posts. We specifically need:
+&#x2022; Accounts reached &#x2014; the number of unique people who saw the post (not total views)
+&#x2022; Saves
+&#x2022; Follower vs Non-follower split (shown as a % breakdown in Insights)
+
+How to find this: Open a post or reel &#x2192; tap the "View Insights" or "See Insights" button below it &#x2192; scroll down to see reach, saves, and audience breakdown. A screenshot of this page for 3 posts is all we need.
+
+Once we have this, we'll come back to you promptly with what we can offer.
+
+Looking forward to working together!
+
+Best,
+Tisya Stays Marketing Team</pre>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
