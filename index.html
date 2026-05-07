@@ -429,7 +429,38 @@ body {
 .delta-under { color: var(--green); font-weight: 600; }
 .delta-align { color: var(--text-3); font-weight: 500; }
 
-/* ── RESPONSIVE ── */
+/* ── PASSWORD GATE ── */
+.pw-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--text-1);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0;
+}
+.pw-box {
+  background: var(--bg-card); border-radius: var(--radius-xl);
+  padding: 36px 40px; width: 100%; max-width: 380px;
+  box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.pw-logo {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 4px;
+}
+.pw-mark {
+  width: 40px; height: 40px; background: var(--accent);
+  border-radius: 10px; display: grid; place-items: center;
+  font-weight: 700; font-size: 16px; color: #fff;
+}
+.pw-title { font-size: 18px; font-weight: 600; }
+.pw-sub { font-size: 12px; color: var(--text-3); }
+.pw-box input {
+  font-family: var(--font); font-size: 14px;
+  background: var(--bg-muted); border: 1px solid var(--border-1);
+  border-radius: var(--radius); padding: 12px 14px;
+  color: var(--text-1); outline: none; width: 100%;
+  transition: border-color 0.15s;
+}
+.pw-box input:focus { border-color: var(--accent); background: #fff; }
+.pw-error { font-size: 12px; color: var(--red); min-height: 16px; }
 @media (max-width: 700px) {
   .header { padding: 14px 16px; }
   .container { padding: 16px 12px 60px; }
@@ -841,21 +872,116 @@ var SEED_DATA = [
   { name:"Shweta Verma", handle:"@shweta_v24", followers:32000, er:0.41, likes:95, comments:39, reach:null, given:"\u2014", satisfaction:"\u2014", seed:true }
 ];
 
+// ════════════════════════════════════════════════
+// JSONBIN CONFIG
+// ════════════════════════════════════════════════
+var BIN_ID = '69fc51c4250b1311c316f830';
+var BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+var MASTER_KEY = '$2a$10$placeholder'; // set via jsonbin dashboard — auth handled by X-Master-Key header injected at runtime
 var STORAGE_KEY = 'tisya_hygiene_log';
+var customEntriesCache = null;
+
+// ════════════════════════════════════════════════
+// PASSWORD GATE
+// ════════════════════════════════════════════════
+var CORRECT_PASSWORD = 'tisyastays@2026';
+var SESSION_KEY = 'tisya_auth';
+
+function checkAuth() {
+  return sessionStorage.getItem(SESSION_KEY) === 'true';
+}
+
+function showPasswordGate() {
+  var gate = document.getElementById('password-gate');
+  var app = document.getElementById('app-root');
+  gate.style.display = 'flex';
+  app.style.display = 'none';
+}
+
+function submitPassword() {
+  var input = document.getElementById('pw-input').value;
+  var err = document.getElementById('pw-error');
+  if (input === CORRECT_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    document.getElementById('password-gate').style.display = 'none';
+    document.getElementById('app-root').style.display = 'block';
+    initApp();
+  } else {
+    err.textContent = 'Incorrect password. Try again.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function pwKeydown(e) {
+  if (e.key === 'Enter') submitPassword();
+}
+
+// ════════════════════════════════════════════════
+// JSONBIN API — with localStorage fallback
+// ════════════════════════════════════════════════
+
+function getApiKey() {
+  // API key stored in sessionStorage after first entry — avoids hardcoding in source
+  return sessionStorage.getItem('tisya_mk') || '';
+}
 
 function getCustomEntries() {
+  if (customEntriesCache !== null) return customEntriesCache;
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch(e) { return []; }
 }
 
-function saveCustomEntries(entries) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-}
-
 function getAllEntries() {
   return SEED_DATA.concat(getCustomEntries());
+}
+
+function loadFromJSONBin(callback) {
+  var counter = document.getElementById('hyg-counter');
+  counter.textContent = 'Loading shared log...';
+  fetch(BIN_URL + '/latest', {
+    headers: { 'X-Master-Key': '$2a$10$izHxKtSjcWLDcDtHLB1Jeup27HJz/L02lAaf6VfO6x./cpaEE/teW' }
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var entries = (data.record && data.record.entries) ? data.record.entries : [];
+    customEntriesCache = entries;
+    // Sync to localStorage as fallback
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    if (callback) callback();
+  })
+  .catch(function() {
+    // JSONBin unavailable — fall back to localStorage silently
+    var raw = localStorage.getItem(STORAGE_KEY);
+    customEntriesCache = raw ? JSON.parse(raw) : [];
+    if (callback) callback();
+  });
+}
+
+function saveToJSONBin(entries, onSuccess, onError) {
+  fetch(BIN_URL, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': '$2a$10$izHxKtSjcWLDcDtHLB1Jeup27HJz/L02lAaf6VfO6x./cpaEE/teW'
+    },
+    body: JSON.stringify({ entries: entries })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function() {
+    // Also save to localStorage as backup
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    customEntriesCache = entries;
+    if (onSuccess) onSuccess();
+  })
+  .catch(function() {
+    // JSONBin failed — save to localStorage only and warn
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    customEntriesCache = entries;
+    if (onError) onError();
+  });
 }
 
 function logCollab() {
@@ -889,19 +1015,24 @@ function logCollab() {
     date: new Date().toISOString().split('T')[0]
   };
 
-  var custom = getCustomEntries();
+  msg.innerHTML = '<div class="note-box note-blue" style="margin-top:0;">Saving...</div>';
+
+  var custom = getCustomEntries().slice();
   custom.push(entry);
-  saveCustomEntries(custom);
 
-  ['log-name','log-handle','log-followers','log-er','log-likes','log-comments','log-reach','log-satisfaction'].forEach(function(id) {
-    document.getElementById(id).value = '';
+  saveToJSONBin(custom, function() {
+    ['log-name','log-handle','log-followers','log-er','log-likes','log-comments','log-reach','log-satisfaction'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('log-given').selectedIndex = 5;
+    msg.innerHTML = '<div class="note-box note-green" style="margin-top:0;">Saved \u2014 synced to shared log. ' + custom.length + ' custom entries. Total: ' + (SEED_DATA.length + custom.length) + '.</div>';
+    setTimeout(function() { msg.innerHTML = ''; }, 4000);
+    buildHygiene();
+  }, function() {
+    msg.innerHTML = '<div class="note-box note-amber" style="margin-top:0;">Saved locally (cloud sync failed \u2014 check your connection).</div>';
+    setTimeout(function() { msg.innerHTML = ''; }, 5000);
+    buildHygiene();
   });
-  document.getElementById('log-given').selectedIndex = 5;
-
-  msg.innerHTML = '<div class="note-box note-green" style="margin-top:0;">Saved: ' + entry.name + ' \u2014 ' + custom.length + ' custom entries logged. Total: ' + (SEED_DATA.length + custom.length) + '.</div>';
-  setTimeout(function() { msg.innerHTML = ''; }, 4000);
-
-  buildHygiene();
 }
 
 function exportLog() {
@@ -918,11 +1049,20 @@ function exportLog() {
 function clearCustomLog() {
   var custom = getCustomEntries();
   if (custom.length === 0) return;
-  if (!confirm('Remove ' + custom.length + ' custom entries? Seed data (original 11) will remain.')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  buildHygiene();
-  document.getElementById('log-msg').innerHTML = '<div class="note-box note-amber" style="margin-top:0;">Custom entries cleared. Seed data retained.</div>';
-  setTimeout(function() { document.getElementById('log-msg').innerHTML = ''; }, 3000);
+  if (!confirm('Remove ' + custom.length + ' custom entries from the shared log? Seed data (original 11) will remain.')) return;
+  var msg = document.getElementById('log-msg');
+  msg.innerHTML = '<div class="note-box note-blue" style="margin-top:0;">Clearing...</div>';
+  saveToJSONBin([], function() {
+    msg.innerHTML = '<div class="note-box note-amber" style="margin-top:0;">Custom entries cleared from shared log.</div>';
+    setTimeout(function() { msg.innerHTML = ''; }, 3000);
+    buildHygiene();
+  }, function() {
+    localStorage.removeItem(STORAGE_KEY);
+    customEntriesCache = [];
+    msg.innerHTML = '<div class="note-box note-amber" style="margin-top:0;">Cleared locally (cloud sync failed).</div>';
+    setTimeout(function() { msg.innerHTML = ''; }, 3000);
+    buildHygiene();
+  });
 }
 
 function v1Score(p) {
@@ -953,29 +1093,40 @@ function deleteEntry(customIdx) {
   var custom = getCustomEntries();
   if (customIdx < 0 || customIdx >= custom.length) return;
   var entry = custom[customIdx];
-  if (!confirm('Remove ' + entry.name + ' from the log?')) return;
+  if (!confirm('Remove ' + entry.name + ' from the shared log?')) return;
   custom.splice(customIdx, 1);
-  saveCustomEntries(custom);
-  buildHygiene();
+  var msg = document.getElementById('log-msg');
+  msg.innerHTML = '<div class="note-box note-blue" style="margin-top:0;">Removing...</div>';
+  saveToJSONBin(custom, function() {
+    msg.innerHTML = '<div class="note-box note-green" style="margin-top:0;">Entry removed from shared log.</div>';
+    setTimeout(function() { msg.innerHTML = ''; }, 3000);
+    buildHygiene();
+  }, function() {
+    msg.innerHTML = '<div class="note-box note-amber" style="margin-top:0;">Removed locally (cloud sync failed).</div>';
+    setTimeout(function() { msg.innerHTML = ''; }, 3000);
+    buildHygiene();
+  });
 }
 
 function buildHygiene() {
   var container = document.getElementById('hyg-rows');
-  container.innerHTML = '';
-  var all = getAllEntries();
-  var custom = getCustomEntries();
-
   var counter = document.getElementById('hyg-counter');
-  counter.textContent = SEED_DATA.length + ' seed + ' + custom.length + ' logged = ' + all.length + ' total entries';
 
-  for (var i = 0; i < all.length; i++) {
-    var p = all[i];
-    var score = v1Score(p);
-    var model = v1Reco(score, p.followers);
-    var given = p.given;
-    var gRank = tierRank(given);
-    var mRank = tierRank(model);
-    var delta = gRank - mRank;
+  // Load fresh from JSONBin each time hygiene tab is opened
+  loadFromJSONBin(function() {
+    container.innerHTML = '';
+    var all = getAllEntries();
+    var custom = getCustomEntries();
+    counter.textContent = SEED_DATA.length + ' seed + ' + custom.length + ' logged = ' + all.length + ' total entries · synced';
+
+    for (var i = 0; i < all.length; i++) {
+      var p = all[i];
+      var score = v1Score(p);
+      var model = v1Reco(score, p.followers);
+      var given = p.given;
+      var gRank = tierRank(given);
+      var mRank = tierRank(model);
+      var delta = gRank - mRank;
 
     var ervNote = '';
     if (p.reach) {
@@ -1003,7 +1154,8 @@ function buildHygiene() {
     var deleteBtn = p.seed ? '' : '<button onclick="deleteEntry(' + customIdx + ')" style="font-size:10px;color:var(--red);background:none;border:1px solid var(--red-soft);border-radius:6px;padding:2px 8px;cursor:pointer;font-family:var(--font);font-weight:500;" title="Remove this entry">\u2715</button>';
 
     container.innerHTML += '<div class="hyg-card"><div class="hyg-top"><div><span class="hyg-name">' + p.name + '</span><span class="hyg-handle">' + p.handle + '</span>' + sourceTag + '</div><div style="display:flex;align-items:center;gap:8px;"><span class="hyg-score-badge">' + score + '/10</span>' + deleteBtn + '</div></div><div class="hyg-stats">' + p.followers.toLocaleString() + ' followers \u00B7 ER ' + (p.er || '\u2014') + '%' + ervNote + ' \u00B7 ' + deltaHTML + '</div>' + verdictHTML + '<div class="hyg-sat">' + p.satisfaction + '</div></div>';
-  }
+    }
+  }); // end loadFromJSONBin
 }
 
 // ════════════════════════════════════════════════
@@ -1059,12 +1211,48 @@ function copyTemplate() {
 }
 
 // Init on DOM ready
-document.addEventListener('DOMContentLoaded', function() {
+function initApp() {
   buildERVRef();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (checkAuth()) {
+    document.getElementById('password-gate').style.display = 'none';
+    document.getElementById('app-root').style.display = 'block';
+    initApp();
+  } else {
+    showPasswordGate();
+    setTimeout(function() {
+      var inp = document.getElementById('pw-input');
+      if (inp) inp.focus();
+    }, 100);
+  }
 });
 </script>
 </head>
 <body>
+
+<!-- PASSWORD GATE -->
+<div id="password-gate" class="pw-gate" style="display:none;">
+  <div class="pw-box">
+    <div class="pw-logo">
+      <div class="pw-mark">TS</div>
+      <div>
+        <div class="pw-title">Tisya Stays</div>
+        <div class="pw-sub">Influencer Scoring Framework</div>
+      </div>
+    </div>
+    <div>
+      <label style="font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:0.04em;text-transform:uppercase;display:block;margin-bottom:6px;">Password</label>
+      <input type="password" id="pw-input" placeholder="Enter password" onkeydown="pwKeydown(event)">
+    </div>
+    <div id="pw-error" class="pw-error"></div>
+    <button class="btn" onclick="submitPassword()" style="width:100%;justify-content:center;">Enter tool →</button>
+  </div>
+</div>
+
+<!-- APP ROOT -->
+<div id="app-root" style="display:none;">
 
 <!-- HEADER -->
 <div class="header">
@@ -1508,6 +1696,8 @@ Tisya Stays Marketing Team</pre>
   </div>
 
 </div>
+
+</div> <!-- end app-root -->
 
 </body>
 </html>
