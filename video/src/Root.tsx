@@ -1,10 +1,18 @@
 import "./index.css";
-import { MyComposition } from "./Composition";
+import { Composition } from "remotion";
+import { TisyaReel } from "./Composition";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      <MyComposition />
+      <Composition
+        id="TisyaReel"
+        component={TisyaReel}
+        durationInFrames={300}
+        fps={30}
+        width={1080}
+        height={1920}
+      />
     </>
   );
 };
