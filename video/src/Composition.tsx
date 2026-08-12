@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import { Video } from "@remotion/media";
 
 const FPS = 30;
-const OVERLAP = 32; // slow, unhurried crossfades (~1.07s)
 const GREEN = "#0E3B2A";
 const ORANGE = "#F76902"; // sampled from the brand sparkle mark
 
@@ -54,21 +53,29 @@ const useBrandFonts = () => {
 type BeatProps = {
   start: number;
   duration: number;
-  fadeIn: boolean;
-  fadeOut: boolean;
+  fadeInFrames: number;
+  fadeOutFrames: number;
   children: React.ReactNode;
 };
 
+// Each beat's fade-in/out length is explicit (rather than one global
+// crossfade length) so a short beat's two fades never together exceed
+// its own duration — otherwise it would never reach full opacity and
+// would sit permanently triple-blended between both neighbours.
 const Beat: React.FC<BeatProps> = ({
   start,
   duration,
-  fadeIn,
-  fadeOut,
+  fadeInFrames,
+  fadeOutFrames,
   children,
 }) => {
   return (
     <Sequence from={start} durationInFrames={duration}>
-      <BeatOpacity duration={duration} fadeIn={fadeIn} fadeOut={fadeOut}>
+      <BeatOpacity
+        duration={duration}
+        fadeInFrames={fadeInFrames}
+        fadeOutFrames={fadeOutFrames}
+      >
         {children}
       </BeatOpacity>
     </Sequence>
@@ -77,20 +84,20 @@ const Beat: React.FC<BeatProps> = ({
 
 const BeatOpacity: React.FC<{
   duration: number;
-  fadeIn: boolean;
-  fadeOut: boolean;
+  fadeInFrames: number;
+  fadeOutFrames: number;
   children: React.ReactNode;
-}> = ({ duration, fadeIn, fadeOut, children }) => {
+}> = ({ duration, fadeInFrames, fadeOutFrames, children }) => {
   const frame = useCurrentFrame();
-  const inOpacity = fadeIn
-    ? interpolate(frame, [0, OVERLAP], [0, 1], {
+  const inOpacity = fadeInFrames
+    ? interpolate(frame, [0, fadeInFrames], [0, 1], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
         easing: Easing.bezier(0.4, 0, 0.2, 1),
       })
     : 1;
-  const outOpacity = fadeOut
-    ? interpolate(frame, [duration - OVERLAP, duration], [1, 0], {
+  const outOpacity = fadeOutFrames
+    ? interpolate(frame, [duration - fadeOutFrames, duration], [1, 0], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
         easing: Easing.bezier(0.4, 0, 0.2, 1),
@@ -238,33 +245,43 @@ const Caption: React.FC<{
   );
 };
 
-// Beat timeline (30fps). Each beat overlaps the next by OVERLAP frames,
-// crossfading — no hard cuts, no flashy wipes.
+// Beat timeline (30fps). Transition lengths are picked per-pair: long,
+// slow dissolves (28) between the hero shots, short ones (10) either
+// side of the brief teal-room accent so it (and its neighbours) still
+// reach full opacity instead of sitting permanently triple-blended.
+const OL_12 = 28;
+const OL_23 = 16;
+const OL_3_3B = 10;
+const OL_3B_4 = 10;
+const OL_45 = 20;
+const OL_56 = 28;
+const OL_67 = 24;
+
 const B1_START = 0;
 const B1_DUR = 88; // Svar — grand living room
-const B2_START = B1_START + B1_DUR - OVERLAP; // 56
+const B2_START = B1_START + B1_DUR - OL_12; // 60
 const B2_DUR = 84; // Svar — quiet portrait
-const B3_START = B2_START + B2_DUR - OVERLAP; // 108
+const B3_START = B2_START + B2_DUR - OL_23; // 128
 const B3_DUR = 51; // Jaisal — wide living room, architectural
-const B3B_START = B3_START + B3_DUR - OVERLAP; // 127
+const B3B_START = B3_START + B3_DUR - OL_3_3B; // 169
 const B3B_DUR = 39; // Svar — the lounge, empty, before she's revealed in it
-const B4_START = B3B_START + B3B_DUR - OVERLAP; // 134
-const B4_DUR = 72; // Svar — lounge under pendant light, now with her in it
-const B5_START = B4_START + B4_DUR - OVERLAP; // 174
+const B4_START = B3B_START + B3B_DUR - OL_3B_4; // 198
+const B4_DUR = 54; // Svar — lounge under pendant light, now with her in it
+const B5_START = B4_START + B4_DUR - OL_45; // 232
 const B5_DUR = 90; // Svar — poolside repose
-const B6_START = B5_START + B5_DUR - OVERLAP; // 232
+const B6_START = B5_START + B5_DUR - OL_56; // 294
 const B6_DUR = 72; // Jaisal — pool, wide
-const B7_START = B6_START + B6_DUR - OVERLAP; // 272
+const B7_START = B6_START + B6_DUR - OL_67; // 342
 const B7_DUR = 120; // End card — a slow, held close
 
-export const TOTAL_DURATION = B7_START + B7_DUR; // 392 frames / 13.1s
+export const TOTAL_DURATION = B7_START + B7_DUR; // 462 frames / 15.4s
 
 export const TisyaReel: React.FC = () => {
   const fontsReady = useBrandFonts();
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <Beat start={B1_START} duration={B1_DUR} fadeIn={false} fadeOut>
+      <Beat start={B1_START} duration={B1_DUR} fadeInFrames={0} fadeOutFrames={OL_12}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={4.0}
@@ -274,7 +291,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B2_START} duration={B2_DUR} fadeIn fadeOut>
+      <Beat start={B2_START} duration={B2_DUR} fadeInFrames={OL_12} fadeOutFrames={OL_23}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={20.95}
@@ -285,7 +302,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3_START} duration={B3_DUR} fadeIn fadeOut>
+      <Beat start={B3_START} duration={B3_DUR} fadeInFrames={OL_23} fadeOutFrames={OL_3_3B}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={1.8}
@@ -295,7 +312,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3B_START} duration={B3B_DUR} fadeIn fadeOut>
+      <Beat start={B3B_START} duration={B3B_DUR} fadeInFrames={OL_3_3B} fadeOutFrames={OL_3B_4}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={11.0}
@@ -305,18 +322,18 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B4_START} duration={B4_DUR} fadeIn fadeOut>
+      <Beat start={B4_START} duration={B4_DUR} fadeInFrames={OL_3B_4} fadeOutFrames={OL_45}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={12.5}
           duration={B4_DUR}
           zoomFrom={1.02}
-          zoomTo={1.05}
+          zoomTo={1.04}
           focus="50% 42%"
         />
       </Beat>
 
-      <Beat start={B5_START} duration={B5_DUR} fadeIn fadeOut>
+      <Beat start={B5_START} duration={B5_DUR} fadeInFrames={OL_45} fadeOutFrames={OL_56}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={26.3}
@@ -327,7 +344,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B6_START} duration={B6_DUR} fadeIn fadeOut>
+      <Beat start={B6_START} duration={B6_DUR} fadeInFrames={OL_56} fadeOutFrames={OL_67}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={12.7}
@@ -337,7 +354,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B7_START} duration={B7_DUR} fadeIn={false} fadeOut={false}>
+      <Beat start={B7_START} duration={B7_DUR} fadeInFrames={OL_67} fadeOutFrames={0}>
         <AbsoluteFill style={{ backgroundColor: GREEN }}>
           <Img
             src={staticFile("end-card.png")}
@@ -346,34 +363,19 @@ export const TisyaReel: React.FC = () => {
         </AbsoluteFill>
       </Beat>
 
+      {/* Captions never overlap each other, and the last one clears
+          well before the end card starts fading in at B7_START. */}
       {fontsReady && (
         <>
-          <Caption
-            text="Explore refined living spaces."
-            startFrame={B1_START + 18}
-            endFrame={B1_START + B1_DUR - 8}
-          />
-          <Caption
-            text="Experience quiet luxury here."
-            startFrame={B2_START + 22}
-            endFrame={B2_START + B2_DUR - 8}
-          />
-          <Caption
-            text="Crafted for fine living."
-            startFrame={B3_START + 12}
-            endFrame={B3_START + B3_DUR - 4}
-            fade={18}
-          />
-          <Caption
-            text="Luxury in every detail."
-            startFrame={B4_START + 16}
-            endFrame={B4_START + B4_DUR - 8}
-            fade={28}
-          />
+          <Caption text="Explore refined living spaces." startFrame={14} endFrame={62} fade={20} />
+          <Caption text="Experience quiet luxury here." startFrame={80} endFrame={128} fade={20} />
+          <Caption text="Crafted for fine living." startFrame={146} endFrame={186} fade={17} />
+          <Caption text="Luxury in every detail." startFrame={204} endFrame={244} fade={17} />
           <Caption
             text="Unfold your private sanctuary."
-            startFrame={B6_START + 18}
-            endFrame={B6_START + B6_DUR - 6}
+            startFrame={296}
+            endFrame={332}
+            fade={16}
           />
         </>
       )}
