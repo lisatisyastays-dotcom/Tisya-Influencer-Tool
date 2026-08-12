@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Video } from "@remotion/media";
 
 const FPS = 30;
-const OVERLAP = 26; // slow, unhurried crossfades (~0.87s)
+const OVERLAP = 32; // slow, unhurried crossfades (~1.07s)
 const GREEN = "#0E3B2A";
 const ORANGE = "#F76902"; // sampled from the brand sparkle mark
 
@@ -159,10 +159,10 @@ const Caption: React.FC<{
   startFrame: number;
   endFrame: number;
   fade?: number;
-}> = ({ text, startFrame, endFrame, fade = 20 }) => {
+}> = ({ text, startFrame, endFrame, fade = 32 }) => {
   const frame = useCurrentFrame();
   const span = endFrame - startFrame;
-  const localFade = Math.min(fade, Math.floor(span / 2));
+  const localFade = Math.max(1, Math.min(fade, Math.ceil(span / 2) - 1));
 
   const opacity = interpolate(
     frame,
@@ -170,7 +170,7 @@ const Caption: React.FC<{
     [0, 1, 1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
-  const rise = interpolate(frame, [startFrame, startFrame + localFade], [10, 0], {
+  const rise = interpolate(frame, [startFrame, startFrame + localFade], [16, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.16, 1, 0.3, 1),
@@ -241,21 +241,23 @@ const Caption: React.FC<{
 // Beat timeline (30fps). Each beat overlaps the next by OVERLAP frames,
 // crossfading — no hard cuts, no flashy wipes.
 const B1_START = 0;
-const B1_DUR = 87; // Svar — grand living room
-const B2_START = B1_START + B1_DUR - OVERLAP; // 61
-const B2_DUR = 82; // Svar — quiet portrait
-const B3_START = B2_START + B2_DUR - OVERLAP; // 117
+const B1_DUR = 88; // Svar — grand living room
+const B2_START = B1_START + B1_DUR - OVERLAP; // 56
+const B2_DUR = 84; // Svar — quiet portrait
+const B3_START = B2_START + B2_DUR - OVERLAP; // 108
 const B3_DUR = 51; // Jaisal — wide living room, architectural
-const B4_START = B3_START + B3_DUR - OVERLAP; // 142
-const B4_DUR = 72; // Svar — lounge under pendant light
-const B5_START = B4_START + B4_DUR - OVERLAP; // 188
+const B3B_START = B3_START + B3_DUR - OVERLAP; // 127
+const B3B_DUR = 39; // Svar — the lounge, empty, before she's revealed in it
+const B4_START = B3B_START + B3B_DUR - OVERLAP; // 134
+const B4_DUR = 72; // Svar — lounge under pendant light, now with her in it
+const B5_START = B4_START + B4_DUR - OVERLAP; // 174
 const B5_DUR = 90; // Svar — poolside repose
-const B6_START = B5_START + B5_DUR - OVERLAP; // 252
-const B6_DUR = 78; // Jaisal — pool, wide
-const B7_START = B6_START + B6_DUR - OVERLAP; // 304
-const B7_DUR = 90; // End card — a slow, held close
+const B6_START = B5_START + B5_DUR - OVERLAP; // 232
+const B6_DUR = 72; // Jaisal — pool, wide
+const B7_START = B6_START + B6_DUR - OVERLAP; // 272
+const B7_DUR = 120; // End card — a slow, held close
 
-export const TOTAL_DURATION = B7_START + B7_DUR; // 394 frames / 13.1s
+export const TOTAL_DURATION = B7_START + B7_DUR; // 392 frames / 13.1s
 
 export const TisyaReel: React.FC = () => {
   const fontsReady = useBrandFonts();
@@ -268,7 +270,7 @@ export const TisyaReel: React.FC = () => {
           trimBeforeSec={4.0}
           duration={B1_DUR}
           zoomFrom={1}
-          zoomTo={1.035}
+          zoomTo={1.03}
         />
       </Beat>
 
@@ -277,8 +279,8 @@ export const TisyaReel: React.FC = () => {
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={20.95}
           duration={B2_DUR}
-          zoomFrom={1.05}
-          zoomTo={1.09}
+          zoomFrom={1.04}
+          zoomTo={1.07}
           focus="50% 38%"
         />
       </Beat>
@@ -289,7 +291,17 @@ export const TisyaReel: React.FC = () => {
           trimBeforeSec={1.8}
           duration={B3_DUR}
           zoomFrom={1}
-          zoomTo={1.03}
+          zoomTo={1.025}
+        />
+      </Beat>
+
+      <Beat start={B3B_START} duration={B3B_DUR} fadeIn fadeOut>
+        <Clip
+          src={staticFile("villa-svar.mp4")}
+          trimBeforeSec={11.0}
+          duration={B3B_DUR}
+          zoomFrom={1}
+          zoomTo={1.02}
         />
       </Beat>
 
@@ -299,7 +311,7 @@ export const TisyaReel: React.FC = () => {
           trimBeforeSec={12.5}
           duration={B4_DUR}
           zoomFrom={1.02}
-          zoomTo={1.06}
+          zoomTo={1.05}
           focus="50% 42%"
         />
       </Beat>
@@ -309,8 +321,8 @@ export const TisyaReel: React.FC = () => {
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={26.3}
           duration={B5_DUR}
-          zoomFrom={1.03}
-          zoomTo={1.07}
+          zoomFrom={1.02}
+          zoomTo={1.05}
           focus="58% 45%"
         />
       </Beat>
@@ -321,7 +333,7 @@ export const TisyaReel: React.FC = () => {
           trimBeforeSec={12.7}
           duration={B6_DUR}
           zoomFrom={1}
-          zoomTo={1.045}
+          zoomTo={1.03}
         />
       </Beat>
 
@@ -338,30 +350,30 @@ export const TisyaReel: React.FC = () => {
         <>
           <Caption
             text="Explore refined living spaces."
-            startFrame={B1_START + 8}
-            endFrame={B1_START + B1_DUR - 6}
+            startFrame={B1_START + 18}
+            endFrame={B1_START + B1_DUR - 8}
           />
           <Caption
             text="Experience quiet luxury here."
-            startFrame={B2_START + OVERLAP + 4}
-            endFrame={B2_START + B2_DUR - 6}
+            startFrame={B2_START + 22}
+            endFrame={B2_START + B2_DUR - 8}
           />
           <Caption
             text="Crafted for fine living."
-            startFrame={B3_START + OVERLAP - 2}
-            endFrame={B3_START + B3_DUR - 2}
-            fade={13}
+            startFrame={B3_START + 12}
+            endFrame={B3_START + B3_DUR - 4}
+            fade={18}
           />
           <Caption
             text="Luxury in every detail."
-            startFrame={B4_START + OVERLAP - 2}
-            endFrame={B4_START + B4_DUR - 2}
-            fade={13}
+            startFrame={B4_START + 16}
+            endFrame={B4_START + B4_DUR - 8}
+            fade={28}
           />
           <Caption
             text="Unfold your private sanctuary."
-            startFrame={B6_START + OVERLAP + 4}
-            endFrame={B6_START + B6_DUR - 4}
+            startFrame={B6_START + 18}
+            endFrame={B6_START + B6_DUR - 6}
           />
         </>
       )}
