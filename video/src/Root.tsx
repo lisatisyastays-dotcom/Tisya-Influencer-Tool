@@ -1,6 +1,6 @@
 import "./index.css";
 import { Composition } from "remotion";
-import { TisyaReel } from "./Composition";
+import { TisyaReel, TOTAL_DURATION } from "./Composition";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="TisyaReel"
         component={TisyaReel}
-        durationInFrames={300}
+        durationInFrames={TOTAL_DURATION}
         fps={30}
         width={1080}
         height={1920}
