@@ -13,8 +13,9 @@ import { useEffect, useState } from "react";
 import { Video } from "@remotion/media";
 
 const FPS = 30;
-const OVERLAP = 12;
+const OVERLAP = 26; // slow, unhurried crossfades (~0.87s)
 const GREEN = "#0E3B2A";
+const ORANGE = "#F76902"; // sampled from the brand sparkle mark
 
 // A slightly desaturated, gently contrasted filmic grade — no punchy
 // saturation, no hard vignette, just a quiet, premium neutrality.
@@ -27,13 +28,13 @@ const useBrandFonts = () => {
     const handle = delayRender("Loading brand fonts");
     const faces = [
       new FontFace(
-        "Montserrat",
-        `url(${staticFile("fonts/montserrat-latin-300-normal.woff2")}) format("woff2")`,
+        "Poppins",
+        `url(${staticFile("fonts/poppins-latin-300-normal.woff2")}) format("woff2")`,
         { weight: "300", style: "normal" },
       ),
       new FontFace(
-        "Montserrat",
-        `url(${staticFile("fonts/montserrat-latin-500-normal.woff2")}) format("woff2")`,
+        "Poppins",
+        `url(${staticFile("fonts/poppins-latin-500-normal.woff2")}) format("woff2")`,
         { weight: "500", style: "normal" },
       ),
     ];
@@ -158,7 +159,7 @@ const Caption: React.FC<{
   startFrame: number;
   endFrame: number;
   fade?: number;
-}> = ({ text, startFrame, endFrame, fade = 14 }) => {
+}> = ({ text, startFrame, endFrame, fade = 20 }) => {
   const frame = useCurrentFrame();
   const span = endFrame - startFrame;
   const localFade = Math.min(fade, Math.floor(span / 2));
@@ -201,20 +202,37 @@ const Caption: React.FC<{
       <div
         style={{
           position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           opacity,
           translate: `0 ${rise}px`,
-          fontFamily: "Montserrat, sans-serif",
-          fontWeight: 300,
-          color: "#FBFAF7",
-          fontSize: 50,
-          lineHeight: 1.35,
-          textAlign: "center",
-          letterSpacing: "0.04em",
-          maxWidth: 820,
-          textShadow: "0 2px 18px rgba(0,0,0,0.45)",
         }}
       >
-        {text}
+        <div
+          style={{
+            fontFamily: "Poppins, sans-serif",
+            fontWeight: 300,
+            color: "#FBFAF7",
+            fontSize: 50,
+            lineHeight: 1.35,
+            textAlign: "center",
+            letterSpacing: "0.04em",
+            maxWidth: 820,
+            textShadow: "0 2px 18px rgba(0,0,0,0.45)",
+          }}
+        >
+          {text}
+        </div>
+        <div
+          style={{
+            width: 64,
+            height: 3,
+            marginTop: 18,
+            backgroundColor: ORANGE,
+            boxShadow: "0 0 10px rgba(247,105,2,0.55)",
+          }}
+        />
       </div>
     </AbsoluteFill>
   );
@@ -223,21 +241,21 @@ const Caption: React.FC<{
 // Beat timeline (30fps). Each beat overlaps the next by OVERLAP frames,
 // crossfading — no hard cuts, no flashy wipes.
 const B1_START = 0;
-const B1_DUR = 74; // Svar — grand living room
-const B2_START = B1_START + B1_DUR - OVERLAP; // 62
-const B2_DUR = 72; // Svar — quiet portrait
-const B3_START = B2_START + B2_DUR - OVERLAP; // 122
-const B3_DUR = 44; // Jaisal — wide living room, architectural
-const B4_START = B3_START + B3_DUR - OVERLAP; // 154
-const B4_DUR = 69; // Svar — lounge under pendant light
-const B5_START = B4_START + B4_DUR - OVERLAP; // 211
-const B5_DUR = 76; // Svar — poolside repose
-const B6_START = B5_START + B5_DUR - OVERLAP; // 275
-const B6_DUR = 72; // Jaisal — pool, wide
-const B7_START = B6_START + B6_DUR - OVERLAP; // 335
-const B7_DUR = 45; // End card
+const B1_DUR = 87; // Svar — grand living room
+const B2_START = B1_START + B1_DUR - OVERLAP; // 61
+const B2_DUR = 82; // Svar — quiet portrait
+const B3_START = B2_START + B2_DUR - OVERLAP; // 117
+const B3_DUR = 51; // Jaisal — wide living room, architectural
+const B4_START = B3_START + B3_DUR - OVERLAP; // 142
+const B4_DUR = 72; // Svar — lounge under pendant light
+const B5_START = B4_START + B4_DUR - OVERLAP; // 188
+const B5_DUR = 90; // Svar — poolside repose
+const B6_START = B5_START + B5_DUR - OVERLAP; // 252
+const B6_DUR = 78; // Jaisal — pool, wide
+const B7_START = B6_START + B6_DUR - OVERLAP; // 304
+const B7_DUR = 90; // End card — a slow, held close
 
-export const TOTAL_DURATION = B7_START + B7_DUR; // 351 frames / 11.7s
+export const TOTAL_DURATION = B7_START + B7_DUR; // 394 frames / 13.1s
 
 export const TisyaReel: React.FC = () => {
   const fontsReady = useBrandFonts();
@@ -332,13 +350,13 @@ export const TisyaReel: React.FC = () => {
             text="Crafted for fine living."
             startFrame={B3_START + OVERLAP - 2}
             endFrame={B3_START + B3_DUR - 2}
-            fade={10}
+            fade={13}
           />
           <Caption
             text="Luxury in every detail."
             startFrame={B4_START + OVERLAP - 2}
             endFrame={B4_START + B4_DUR - 2}
-            fade={10}
+            fade={13}
           />
           <Caption
             text="Unfold your private sanctuary."
