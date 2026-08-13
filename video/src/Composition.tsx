@@ -16,9 +16,12 @@ const FPS = 30;
 const GREEN = "#0E3B2A";
 const ORANGE = "#F76902"; // sampled from the brand sparkle mark
 
-// A slightly desaturated, gently contrasted filmic grade — no punchy
-// saturation, no hard vignette, just a quiet, premium neutrality.
-const LUXURY_GRADE = "contrast(1.05) saturate(0.9) brightness(1.015)";
+// A gently contrasted filmic grade with a touch more vibrancy than a
+// flat "quiet luxury" look — still premium, but with enough life in the
+// color (especially the pool blues) to feel inviting rather than muted.
+const LUXURY_GRADE = "contrast(1.08) saturate(1.02) brightness(1.02)";
+// A slightly punchier grade for the two pool payoff shots specifically.
+const CLIMAX_GRADE = "contrast(1.1) saturate(1.12) brightness(1.03)";
 
 const useBrandFonts = () => {
   const [ready, setReady] = useState(false);
@@ -118,6 +121,7 @@ type ClipProps = {
   zoomFrom?: number;
   zoomTo?: number;
   focus?: string;
+  climax?: boolean;
 };
 
 const Clip: React.FC<ClipProps> = ({
@@ -127,6 +131,7 @@ const Clip: React.FC<ClipProps> = ({
   zoomFrom = 1,
   zoomTo = 1.035,
   focus = "50% 50%",
+  climax = false,
 }) => {
   const frame = useCurrentFrame();
   const scale = interpolate(frame, [0, duration], [zoomFrom, zoomTo], {
@@ -148,7 +153,7 @@ const Clip: React.FC<ClipProps> = ({
           objectPosition: focus,
           scale,
           transformOrigin: focus,
-          filter: LUXURY_GRADE,
+          filter: climax ? CLIMAX_GRADE : LUXURY_GRADE,
         }}
       />
       <AbsoluteFill
@@ -422,7 +427,8 @@ export const TisyaReel: React.FC = () => {
           trimBeforeSec={12.7}
           duration={B6_DUR}
           zoomFrom={1}
-          zoomTo={1.03}
+          zoomTo={1.05}
+          climax
         />
       </Beat>
 
@@ -432,7 +438,8 @@ export const TisyaReel: React.FC = () => {
           trimBeforeSec={29.5}
           duration={B6B_DUR}
           zoomFrom={1}
-          zoomTo={1.035}
+          zoomTo={1.05}
+          climax
         />
       </Beat>
 
@@ -445,19 +452,22 @@ export const TisyaReel: React.FC = () => {
         </AbsoluteFill>
       </Beat>
 
-      {/* Captions never overlap each other, and the last one clears
-          well before the end card starts fading in at B7_START. */}
+      {/* Each caption holds at full opacity for ~2.3s (fade edges add
+          another ~0.5s each side) before the next one, with a clean gap
+          between them. Captions never overlap each other, and the last
+          one clears well before the end card starts fading in at
+          B7_START. */}
       {fontsReady && (
         <>
-          <Caption text="Explore refined living spaces." startFrame={14} endFrame={58} fade={20} />
-          <Caption text="Experience quiet luxury here." startFrame={144} endFrame={176} fade={16} />
-          <Caption text="Crafted for fine living." startFrame={240} endFrame={270} fade={13} />
-          <Caption text="Luxury in every detail." startFrame={388} endFrame={422} fade={14} />
+          <Caption text="Explore refined living spaces." startFrame={8} endFrame={113} fade={15} />
+          <Caption text="Experience quiet luxury here." startFrame={123} endFrame={228} fade={15} />
+          <Caption text="Crafted for fine living." startFrame={238} endFrame={343} fade={15} />
+          <Caption text="Luxury in every detail." startFrame={353} endFrame={458} fade={15} />
           <Caption
             text="Unfold your private sanctuary."
-            startFrame={503}
-            endFrame={539}
-            fade={17}
+            startFrame={468}
+            endFrame={563}
+            fade={15}
           />
         </>
       )}
