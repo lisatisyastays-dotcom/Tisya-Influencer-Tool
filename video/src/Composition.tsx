@@ -250,45 +250,57 @@ const Caption: React.FC<{
 // either side of the brief accent beats so every beat (and its
 // neighbours) still reaches full opacity instead of sitting
 // permanently triple-blended.
-const OL_12 = 28;
+const OL_1_1B = 26;
+const OL_1B_2 = 26;
 const OL_2_2B = 24;
 const OL_2B_3 = 16;
-const OL_3_3A = 8;
+const OL_3_3C = 8;
+const OL_3C_3A = 8;
 const OL_3A_3B = 8;
-const OL_3B_4 = 10;
+const OL_3B_3D = 14;
+const OL_3D_4 = 18;
 const OL_45 = 20;
 const OL_56 = 28;
-const OL_67 = 24;
+const OL_6_6B = 26;
+const OL_6B_7 = 24;
 
 const B1_START = 0;
 const B1_DUR = 88; // Svar — grand living room
-const B2_START = B1_START + B1_DUR - OL_12; // 60
+const B1B_START = B1_START + B1_DUR - OL_1_1B; // 62
+const B1B_DUR = 78; // Svar — morning coffee, unhurried
+const B2_START = B1B_START + B1B_DUR - OL_1B_2; // 114
 const B2_DUR = 84; // Svar — quiet portrait
-const B2B_START = B2_START + B2_DUR - OL_2_2B; // 120
+const B2B_START = B2_START + B2_DUR - OL_2_2B; // 174
 const B2B_DUR = 66; // Svar — reading, lying on the bed
-const B3_START = B2B_START + B2B_DUR - OL_2B_3; // 170
+const B3_START = B2B_START + B2B_DUR - OL_2B_3; // 224
 const B3_DUR = 51; // Jaisal — wide living room, architectural
-const B3A_START = B3_START + B3_DUR - OL_3_3A; // 213
+const B3C_START = B3_START + B3_DUR - OL_3_3C; // 267
+const B3C_DUR = 22; // Jaisal — a sculptural ceiling detail
+const B3A_START = B3C_START + B3C_DUR - OL_3C_3A; // 281
 const B3A_DUR = 21; // Jaisal — the bedroom, a glimpse
-const B3B_START = B3A_START + B3A_DUR - OL_3A_3B; // 226
+const B3B_START = B3A_START + B3A_DUR - OL_3A_3B; // 294
 const B3B_DUR = 39; // Svar — the lounge, empty, before she's revealed in it
-const B4_START = B3B_START + B3B_DUR - OL_3B_4; // 255
+const B3D_START = B3B_START + B3B_DUR - OL_3B_3D; // 319
+const B3D_DUR = 78; // Svar — seated on the bed, floral dress
+const B4_START = B3D_START + B3D_DUR - OL_3D_4; // 379
 const B4_DUR = 54; // Svar — lounge under pendant light, now with her in it
-const B5_START = B4_START + B4_DUR - OL_45; // 289
+const B5_START = B4_START + B4_DUR - OL_45; // 413
 const B5_DUR = 90; // Svar — poolside repose
-const B6_START = B5_START + B5_DUR - OL_56; // 351
+const B6_START = B5_START + B5_DUR - OL_56; // 475
 const B6_DUR = 72; // Jaisal — pool, wide
-const B7_START = B6_START + B6_DUR - OL_67; // 399
-const B7_DUR = 120; // End card — a slow, held close
+const B6B_START = B6_START + B6_DUR - OL_6_6B; // 521
+const B6B_DUR = 96; // Svar — its own pool, golden light, the second sanctuary
+const B7_START = B6B_START + B6B_DUR - OL_6B_7; // 593
+const B7_DUR = 160; // End card — a slow, held close
 
-export const TOTAL_DURATION = B7_START + B7_DUR; // 519 frames / 17.3s
+export const TOTAL_DURATION = B7_START + B7_DUR; // 753 frames / 25.1s
 
 export const TisyaReel: React.FC = () => {
   const fontsReady = useBrandFonts();
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <Beat start={B1_START} duration={B1_DUR} fadeInFrames={0} fadeOutFrames={OL_12}>
+      <Beat start={B1_START} duration={B1_DUR} fadeInFrames={0} fadeOutFrames={OL_1_1B}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={4.0}
@@ -298,7 +310,18 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B2_START} duration={B2_DUR} fadeInFrames={OL_12} fadeOutFrames={OL_2_2B}>
+      <Beat start={B1B_START} duration={B1B_DUR} fadeInFrames={OL_1_1B} fadeOutFrames={OL_1B_2}>
+        <Clip
+          src={staticFile("villa-svar.mp4")}
+          trimBeforeSec={6.9}
+          duration={B1B_DUR}
+          zoomFrom={1.03}
+          zoomTo={1.06}
+          focus="45% 32%"
+        />
+      </Beat>
+
+      <Beat start={B2_START} duration={B2_DUR} fadeInFrames={OL_1B_2} fadeOutFrames={OL_2_2B}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={20.95}
@@ -320,7 +343,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3_START} duration={B3_DUR} fadeInFrames={OL_2B_3} fadeOutFrames={OL_3_3A}>
+      <Beat start={B3_START} duration={B3_DUR} fadeInFrames={OL_2B_3} fadeOutFrames={OL_3_3C}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={1.8}
@@ -330,7 +353,17 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3A_START} duration={B3A_DUR} fadeInFrames={OL_3_3A} fadeOutFrames={OL_3A_3B}>
+      <Beat start={B3C_START} duration={B3C_DUR} fadeInFrames={OL_3_3C} fadeOutFrames={OL_3C_3A}>
+        <Clip
+          src={staticFile("villa-jaisal.mp4")}
+          trimBeforeSec={4.5}
+          duration={B3C_DUR}
+          zoomFrom={1}
+          zoomTo={1.015}
+        />
+      </Beat>
+
+      <Beat start={B3A_START} duration={B3A_DUR} fadeInFrames={OL_3C_3A} fadeOutFrames={OL_3A_3B}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={7.3}
@@ -340,7 +373,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3B_START} duration={B3B_DUR} fadeInFrames={OL_3A_3B} fadeOutFrames={OL_3B_4}>
+      <Beat start={B3B_START} duration={B3B_DUR} fadeInFrames={OL_3A_3B} fadeOutFrames={OL_3B_3D}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={11.0}
@@ -350,7 +383,18 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B4_START} duration={B4_DUR} fadeInFrames={OL_3B_4} fadeOutFrames={OL_45}>
+      <Beat start={B3D_START} duration={B3D_DUR} fadeInFrames={OL_3B_3D} fadeOutFrames={OL_3D_4}>
+        <Clip
+          src={staticFile("villa-svar.mp4")}
+          trimBeforeSec={15.2}
+          duration={B3D_DUR}
+          zoomFrom={1.02}
+          zoomTo={1.05}
+          focus="50% 40%"
+        />
+      </Beat>
+
+      <Beat start={B4_START} duration={B4_DUR} fadeInFrames={OL_3D_4} fadeOutFrames={OL_45}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={12.5}
@@ -372,7 +416,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B6_START} duration={B6_DUR} fadeInFrames={OL_56} fadeOutFrames={OL_67}>
+      <Beat start={B6_START} duration={B6_DUR} fadeInFrames={OL_56} fadeOutFrames={OL_6_6B}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={12.7}
@@ -382,7 +426,17 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B7_START} duration={B7_DUR} fadeInFrames={OL_67} fadeOutFrames={0}>
+      <Beat start={B6B_START} duration={B6B_DUR} fadeInFrames={OL_6_6B} fadeOutFrames={OL_6B_7}>
+        <Clip
+          src={staticFile("villa-svar.mp4")}
+          trimBeforeSec={29.5}
+          duration={B6B_DUR}
+          zoomFrom={1}
+          zoomTo={1.035}
+        />
+      </Beat>
+
+      <Beat start={B7_START} duration={B7_DUR} fadeInFrames={OL_6B_7} fadeOutFrames={0}>
         <AbsoluteFill style={{ backgroundColor: GREEN }}>
           <Img
             src={staticFile("end-card.png")}
@@ -395,15 +449,15 @@ export const TisyaReel: React.FC = () => {
           well before the end card starts fading in at B7_START. */}
       {fontsReady && (
         <>
-          <Caption text="Explore refined living spaces." startFrame={14} endFrame={62} fade={20} />
-          <Caption text="Experience quiet luxury here." startFrame={84} endFrame={128} fade={20} />
-          <Caption text="Crafted for fine living." startFrame={178} endFrame={214} fade={17} />
-          <Caption text="Luxury in every detail." startFrame={269} endFrame={305} fade={17} />
+          <Caption text="Explore refined living spaces." startFrame={14} endFrame={58} fade={20} />
+          <Caption text="Experience quiet luxury here." startFrame={144} endFrame={176} fade={16} />
+          <Caption text="Crafted for fine living." startFrame={240} endFrame={270} fade={13} />
+          <Caption text="Luxury in every detail." startFrame={388} endFrame={422} fade={14} />
           <Caption
             text="Unfold your private sanctuary."
-            startFrame={352}
-            endFrame={390}
-            fade={16}
+            startFrame={503}
+            endFrame={539}
+            fade={17}
           />
         </>
       )}
