@@ -255,16 +255,22 @@ const Caption: React.FC<{
 // either side of the brief accent beats so every beat (and its
 // neighbours) still reaches full opacity instead of sitting
 // permanently triple-blended.
-// Only 4 clips of her remain (coffee, portrait, lounge, poolside) — the
-// reading and bed-sitting shots were removed as the most redundant pair
-// (both on-bed, adjacent in source), keeping the most varied four.
-const OL_1_1B = 26;
+// Only 4 clips of her remain (coffee, portrait, lounge, poolside). Three
+// gimbal walkthrough clips add real camera movement rather than
+// simulated Ken Burns: a continuing pan of the same living room from
+// beat 1, a close-fabric-to-full-room reveal, and a calm look at the
+// palm-wallpaper bedroom (the same room the removed reading shot used,
+// now shown empty).
+const OL_1_1C = 26;
+const OL_1C_1B = 24;
 const OL_1B_2 = 26;
-const OL_2_3 = 22;
-const OL_3_3C = 8;
+const OL_2_3 = 10;
+const OL_3_3E = 14;
+const OL_3E_3C = 10;
 const OL_3C_3A = 8;
 const OL_3A_3B = 8;
-const OL_3B_4 = 14;
+const OL_3B_3F = 12;
+const OL_3F_4 = 18;
 const OL_45 = 20;
 const OL_56 = 28;
 const OL_6_6B = 26;
@@ -272,37 +278,43 @@ const OL_6B_7 = 24;
 
 const B1_START = 0;
 const B1_DUR = 88; // Svar — grand living room
-const B1B_START = B1_START + B1_DUR - OL_1_1B; // 62
+const B1C_START = B1_START + B1_DUR - OL_1_1C; // 62
+const B1C_DUR = 78; // Svar — the same room, a real gimbal pan
+const B1B_START = B1C_START + B1C_DUR - OL_1C_1B; // 116
 const B1B_DUR = 78; // Svar — morning coffee, unhurried
-const B2_START = B1B_START + B1B_DUR - OL_1B_2; // 114
+const B2_START = B1B_START + B1B_DUR - OL_1B_2; // 168
 const B2_DUR = 84; // Svar — quiet portrait
-const B3_START = B2_START + B2_DUR - OL_2_3; // 176
+const B3_START = B2_START + B2_DUR - OL_2_3; // 242
 const B3_DUR = 51; // Jaisal — wide living room, architectural
-const B3C_START = B3_START + B3_DUR - OL_3_3C; // 219
+const B3E_START = B3_START + B3_DUR - OL_3_3E; // 279
+const B3E_DUR = 90; // fabric texture pulling back to reveal the room
+const B3C_START = B3E_START + B3E_DUR - OL_3E_3C; // 359
 const B3C_DUR = 22; // Jaisal — a sculptural ceiling detail
-const B3A_START = B3C_START + B3C_DUR - OL_3C_3A; // 233
+const B3A_START = B3C_START + B3C_DUR - OL_3C_3A; // 373
 const B3A_DUR = 21; // Jaisal — the bedroom, a glimpse
-const B3B_START = B3A_START + B3A_DUR - OL_3A_3B; // 246
+const B3B_START = B3A_START + B3A_DUR - OL_3A_3B; // 386
 const B3B_DUR = 39; // Svar — the lounge, empty, before she's revealed in it
-const B4_START = B3B_START + B3B_DUR - OL_3B_4; // 271
+const B3F_START = B3B_START + B3B_DUR - OL_3B_3F; // 413
+const B3F_DUR = 72; // Svar — the palm-wallpaper bedroom, empty
+const B4_START = B3F_START + B3F_DUR - OL_3F_4; // 467
 const B4_DUR = 54; // Svar — lounge under pendant light, now with her in it
-const B5_START = B4_START + B4_DUR - OL_45; // 305
+const B5_START = B4_START + B4_DUR - OL_45; // 501
 const B5_DUR = 90; // Svar — poolside repose
-const B6_START = B5_START + B5_DUR - OL_56; // 367
+const B6_START = B5_START + B5_DUR - OL_56; // 563
 const B6_DUR = 72; // Jaisal — pool, wide
-const B6B_START = B6_START + B6_DUR - OL_6_6B; // 413
+const B6B_START = B6_START + B6_DUR - OL_6_6B; // 609
 const B6B_DUR = 96; // Svar — its own pool, golden light, the second sanctuary
-const B7_START = B6B_START + B6B_DUR - OL_6B_7; // 485
+const B7_START = B6B_START + B6B_DUR - OL_6B_7; // 681
 const B7_DUR = 160; // End card — a slow, held close
 
-export const TOTAL_DURATION = B7_START + B7_DUR; // 645 frames / 21.5s
+export const TOTAL_DURATION = B7_START + B7_DUR; // 841 frames / 28.0s
 
 export const TisyaReel: React.FC = () => {
   const fontsReady = useBrandFonts();
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <Beat start={B1_START} duration={B1_DUR} fadeInFrames={0} fadeOutFrames={OL_1_1B}>
+      <Beat start={B1_START} duration={B1_DUR} fadeInFrames={0} fadeOutFrames={OL_1_1C}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={4.0}
@@ -312,7 +324,17 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B1B_START} duration={B1B_DUR} fadeInFrames={OL_1_1B} fadeOutFrames={OL_1B_2}>
+      <Beat start={B1C_START} duration={B1C_DUR} fadeInFrames={OL_1_1C} fadeOutFrames={OL_1C_1B}>
+        <Clip
+          src={staticFile("living-room-pan.mp4")}
+          trimBeforeSec={1.0}
+          duration={B1C_DUR}
+          zoomFrom={1}
+          zoomTo={1.01}
+        />
+      </Beat>
+
+      <Beat start={B1B_START} duration={B1B_DUR} fadeInFrames={OL_1C_1B} fadeOutFrames={OL_1B_2}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={6.9}
@@ -334,7 +356,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3_START} duration={B3_DUR} fadeInFrames={OL_2_3} fadeOutFrames={OL_3_3C}>
+      <Beat start={B3_START} duration={B3_DUR} fadeInFrames={OL_2_3} fadeOutFrames={OL_3_3E}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={1.8}
@@ -344,7 +366,17 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3C_START} duration={B3C_DUR} fadeInFrames={OL_3_3C} fadeOutFrames={OL_3C_3A}>
+      <Beat start={B3E_START} duration={B3E_DUR} fadeInFrames={OL_3_3E} fadeOutFrames={OL_3E_3C}>
+        <Clip
+          src={staticFile("reveal-shot.mp4")}
+          trimBeforeSec={0.5}
+          duration={B3E_DUR}
+          zoomFrom={1}
+          zoomTo={1.01}
+        />
+      </Beat>
+
+      <Beat start={B3C_START} duration={B3C_DUR} fadeInFrames={OL_3E_3C} fadeOutFrames={OL_3C_3A}>
         <Clip
           src={staticFile("villa-jaisal.mp4")}
           trimBeforeSec={4.5}
@@ -364,7 +396,7 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B3B_START} duration={B3B_DUR} fadeInFrames={OL_3A_3B} fadeOutFrames={OL_3B_4}>
+      <Beat start={B3B_START} duration={B3B_DUR} fadeInFrames={OL_3A_3B} fadeOutFrames={OL_3B_3F}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={11.0}
@@ -374,7 +406,17 @@ export const TisyaReel: React.FC = () => {
         />
       </Beat>
 
-      <Beat start={B4_START} duration={B4_DUR} fadeInFrames={OL_3B_4} fadeOutFrames={OL_45}>
+      <Beat start={B3F_START} duration={B3F_DUR} fadeInFrames={OL_3B_3F} fadeOutFrames={OL_3F_4}>
+        <Clip
+          src={staticFile("bedroom-detail.mp4")}
+          trimBeforeSec={3.6}
+          duration={B3F_DUR}
+          zoomFrom={1}
+          zoomTo={1.025}
+        />
+      </Beat>
+
+      <Beat start={B4_START} duration={B4_DUR} fadeInFrames={OL_3F_4} fadeOutFrames={OL_45}>
         <Clip
           src={staticFile("villa-svar.mp4")}
           trimBeforeSec={12.5}
@@ -434,15 +476,15 @@ export const TisyaReel: React.FC = () => {
           B7_START. */}
       {fontsReady && (
         <>
-          <Caption text="Explore refined living spaces." startFrame={6} endFrame={92} fade={13} />
-          <Caption text="Experience quiet luxury here." startFrame={102} endFrame={188} fade={13} />
-          <Caption text="Crafted for fine living." startFrame={198} endFrame={284} fade={13} />
-          <Caption text="Luxury in every detail." startFrame={294} endFrame={380} fade={13} />
+          <Caption text="Explore refined living spaces." startFrame={8} endFrame={113} fade={15} />
+          <Caption text="Experience quiet luxury here." startFrame={175} endFrame={261} fade={13} />
+          <Caption text="Crafted for fine living." startFrame={273} endFrame={378} fade={15} />
+          <Caption text="Luxury in every detail." startFrame={390} endFrame={495} fade={15} />
           <Caption
             text="Unfold your private sanctuary."
-            startFrame={390}
-            endFrame={474}
-            fade={13}
+            startFrame={563}
+            endFrame={668}
+            fade={15}
           />
         </>
       )}
