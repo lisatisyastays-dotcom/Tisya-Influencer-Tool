@@ -51,11 +51,14 @@ export const COLORS = {
   orange: "#FF7A29",
 };
 
-// A shared CSS filter applied to every clip so footage shot in different
-// light (bright daylight villa tour vs. overcast pool party) reads as one
-// consistent, punchy, premium "party ad" grade.
+// A shared filter applied to every clip so footage shot in different light
+// (bright daylight villa tour vs. overcast pool party) reads as one
+// consistent, punchy, premium "party ad" grade. `url(#video-sharpen)` is the
+// SVG unsharp-mask filter defined in components/SharpenDefs.tsx — real
+// clarity/detail enhancement, not just a contrast bump. The teal-shadow /
+// warm-highlight split tone is layered separately in components/FilmTone.tsx.
 export const GRADE_FILTER =
-  "saturate(1.18) contrast(1.08) brightness(1.03) sepia(0.06)";
+  "url(#video-sharpen) contrast(1.16) saturate(1.26) brightness(1.02) sepia(0.05)";
 
 export type PunchInEffect = { type: "punchIn"; zoomTo?: number };
 export type KenBurnsEffect = {

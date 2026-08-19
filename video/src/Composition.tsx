@@ -13,12 +13,15 @@ import {
 } from "./edit-config";
 import { Scene } from "./components/Scene";
 import { Vignette } from "./components/Vignette";
+import { FilmTone } from "./components/FilmTone";
+import { SharpenDefs } from "./components/SharpenDefs";
 import { AmbientBed } from "./components/AmbientBed";
 import { FadeToBlack } from "./components/FadeToBlack";
 
 export const PartyPromoReel: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
+      <SharpenDefs />
       <TransitionSeries>
         {SCENES.map((scene, i) => {
           const transition = TRANSITIONS[i];
@@ -43,6 +46,7 @@ export const PartyPromoReel: React.FC = () => {
           );
         })}
       </TransitionSeries>
+      <FilmTone />
       <Vignette />
       <AmbientBed />
       <FadeToBlack totalFrames={TOTAL_DURATION_IN_FRAMES} />
