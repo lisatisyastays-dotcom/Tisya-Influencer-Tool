@@ -1,15 +1,10 @@
-import { loadFont as loadAnton } from "@remotion/google-fonts/Anton";
-import { loadFont as loadMontserrat } from "@remotion/google-fonts/Montserrat";
+import { loadFont as loadPoppins } from "@remotion/google-fonts/Poppins";
 
-// Anton: bold condensed display font used for every headline/CTA in the reel.
-// Montserrat: small supporting text (brand wordmark, tags).
-// Loading both once here keeps typography consistent across the whole edit.
-export const { fontFamily: DISPLAY_FONT } = loadAnton("normal", {
-  weights: ["400"],
+// Poppins is used for every piece of text in the reel — headlines, tags,
+// and the outro brand card — for one consistent typographic voice.
+export const { fontFamily: DISPLAY_FONT } = loadPoppins("normal", {
+  weights: ["600", "700", "800", "900"],
   subsets: ["latin"],
 });
 
-export const { fontFamily: SUPPORT_FONT } = loadMontserrat("normal", {
-  weights: ["700", "800", "900"],
-  subsets: ["latin"],
-});
+export const SUPPORT_FONT = DISPLAY_FONT;

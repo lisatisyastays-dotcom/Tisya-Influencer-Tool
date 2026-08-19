@@ -11,11 +11,13 @@ import type { WipeDirection } from "@remotion/transitions/wipe";
  * `TOTAL_DURATION_IN_FRAMES` at the bottom), so re-timing the edit is just a
  * matter of editing the numbers below — nothing else needs to change.
  *
- * Structure follows a hook -> build-up -> party peak -> outro arc:
- *   HOOK      (~0-3s)   grab attention immediately
- *   BUILD-UP  (~3-10s)  alternate both reels, energy rising
- *   PEAK      (~10-20s) fastest cuts, most exciting footage, climax hold
- *   OUTRO     (~20-25s) strongest closing shot + brand / CTA card
+ * Structure follows a hook -> build-up -> party peak -> outro arc, with each
+ * shot held 3-5s (slowed down, not just cut faster) so the edit reads as a
+ * handful of deliberate, cinematic moments rather than a rapid-fire montage:
+ *   HOOK      the most attention-grabbing shot
+ *   BUILD-UP  villa + party alternation, energy rising
+ *   PEAK      the party's best moments, climax hold
+ *   OUTRO     strongest closing shot + brand / CTA card
  *
  * The last scene (OUTRO) has no fixed duration — it automatically fills
  * whatever time is left so the composition always lands on exactly 25s.
@@ -39,6 +41,8 @@ export const COLORS = {
   goldDeep: "#C98A22",
   cream: "#FFF7E8",
   ink: "#14110A",
+  // Accent bar under every headline.
+  orange: "#FF7A29",
 };
 
 // A shared CSS filter applied to every clip so footage shot in different
@@ -102,237 +106,89 @@ type TimelineEntry = { scene: SceneDef; transitionAfter?: TransitionDef };
 // HOOK + BUILD-UP + PEAK — every scene except the closing outro card.
 // Reordering, trimming, or re-timing the edit happens here.
 // ----------------------------------------------------------------------------
+// Every reel2 (party) shot below is played back slowed down (playbackRate
+// well under 1) so that ~1.5-2s of real source action fills a full 3-5s of
+// screen time without the clip visibly "running out" of new motion or
+// jump-cutting into unrelated footage mid-shot. This is also what fixes the
+// pacing itself feeling frantic — it's not just a longer hold, the motion is
+// genuinely slower and more cinematic.
 const TIMELINE: TimelineEntry[] = [
   // ---------------------------------------------------------------- HOOK ---
+  // The dive into the group's arms-up cheer, in slow motion — the single
+  // most attention-grabbing moment in either reel.
   {
     scene: {
-      id: "hook-a",
+      id: "hook",
       source: "reel2",
-      trimBeforeSec: 8.75,
-      durationInFrames: 50,
-      effect: { type: "punchIn", zoomTo: 1.16 },
+      trimBeforeSec: 8.3,
+      durationInFrames: 120, // 4.0s
+      playbackRate: 0.4,
+      muteVideo: true,
+      effect: { type: "punchIn", zoomTo: 1.1 },
       caption: { kind: "pop", text: "LET'S PARTY", brand: "TISYA STAYS" },
     },
-    transitionAfter: { kind: "wipe", direction: "from-bottom", durationInFrames: 10 },
-  },
-  {
-    scene: {
-      id: "hook-b",
-      source: "reel1",
-      trimBeforeSec: 26.3,
-      durationInFrames: 44,
-      effect: { type: "kenBurns", zoomTo: 1.05, panXPercent: -1.5 },
-      muteVideo: true,
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 6 },
+    transitionAfter: { kind: "wipe", direction: "from-bottom", durationInFrames: 24 },
   },
 
   // ------------------------------------------------------------ BUILD-UP ---
+  // The villa's living room flowing into the dining room — establishes the
+  // premium stay before cutting back to the party.
   {
     scene: {
-      id: "build-a",
-      source: "reel2",
-      trimBeforeSec: 6.5,
-      durationInFrames: 16,
-      effect: { type: "punchIn", zoomTo: 1.14 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 6 },
-  },
-  {
-    scene: {
-      id: "build-b",
-      source: "reel1",
-      trimBeforeSec: 22.2,
-      durationInFrames: 34,
-      effect: { type: "kenBurns", zoomTo: 1.06, panYPercent: 1.5 },
-      muteVideo: true,
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 6 },
-  },
-  {
-    scene: {
-      id: "build-c",
-      source: "reel2",
-      trimBeforeSec: 5.0,
-      durationInFrames: 36,
-      effect: { type: "punchIn", zoomTo: 1.14 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 6 },
-  },
-  {
-    scene: {
-      id: "build-d",
+      id: "villa",
       source: "reel1",
       trimBeforeSec: 8.0,
-      durationInFrames: 48,
-      effect: { type: "kenBurns", zoomTo: 1.05, panXPercent: 1.5 },
+      durationInFrames: 120, // 4.0s
+      playbackRate: 0.45,
       muteVideo: true,
+      effect: { type: "kenBurns", zoomTo: 1.06, panXPercent: 1.5 },
       caption: { kind: "title", text: "STAY. SIP. CELEBRATE." },
     },
-    transitionAfter: { kind: "fade", durationInFrames: 6 },
+    transitionAfter: { kind: "fade", durationInFrames: 20 },
   },
   {
     scene: {
-      id: "build-e",
+      id: "cheers",
       source: "reel2",
-      trimBeforeSec: 13.1,
-      durationInFrames: 34,
-      effect: { type: "punchIn", zoomTo: 1.14 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 6 },
-  },
-  {
-    scene: {
-      id: "build-f",
-      source: "reel1",
-      trimBeforeSec: 9.0,
-      durationInFrames: 38,
-      effect: { type: "kenBurns", zoomTo: 1.06, panYPercent: -1.5 },
+      trimBeforeSec: 13.0,
+      durationInFrames: 120, // 4.0s
+      playbackRate: 0.4,
       muteVideo: true,
+      effect: { type: "punchIn", zoomTo: 1.1 },
     },
-    transitionAfter: { kind: "wipe", direction: "from-right", durationInFrames: 10 },
+    transitionAfter: { kind: "fade", durationInFrames: 20 },
   },
 
   // ----------------------------------------------------------------- PEAK ---
   {
     scene: {
-      id: "peak-a",
-      source: "reel2",
-      trimBeforeSec: 7.8,
-      durationInFrames: 22,
-      playbackRate: 1.15,
-      muteVideo: true,
-      effect: { type: "punchIn", zoomTo: 1.12 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-b",
-      source: "reel2",
-      trimBeforeSec: 16.6,
-      durationInFrames: 22,
-      effect: { type: "punchIn", zoomTo: 1.13 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-c",
+      id: "dj",
       source: "reel2",
       trimBeforeSec: 15.3,
-      durationInFrames: 24,
-      effect: { type: "punchIn", zoomTo: 1.12 },
+      durationInFrames: 135, // 4.5s
+      playbackRate: 0.4,
+      muteVideo: true,
+      effect: { type: "punchIn", zoomTo: 1.08 },
       caption: { kind: "tag", text: "LIVE DJ" },
     },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-d",
-      source: "reel1",
-      trimBeforeSec: 12.7,
-      durationInFrames: 16,
-      effect: { type: "kenBurns", zoomTo: 1.07 },
-      muteVideo: true,
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-e",
-      source: "reel2",
-      trimBeforeSec: 19.0,
-      durationInFrames: 20,
-      effect: { type: "punchIn", zoomTo: 1.13 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-f",
-      source: "reel2",
-      trimBeforeSec: 11.5,
-      durationInFrames: 22,
-      effect: { type: "punchIn", zoomTo: 1.12 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-g",
-      source: "reel2",
-      trimBeforeSec: 20.05,
-      durationInFrames: 16,
-      effect: { type: "kenBurns", zoomTo: 1.08 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-h",
-      source: "reel2",
-      trimBeforeSec: 10.6,
-      durationInFrames: 22,
-      effect: { type: "punchIn", zoomTo: 1.13 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-i",
-      source: "reel2",
-      trimBeforeSec: 17.6,
-      durationInFrames: 24,
-      effect: { type: "punchIn", zoomTo: 1.12 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-j",
-      source: "reel2",
-      trimBeforeSec: 4.0,
-      durationInFrames: 22,
-      effect: { type: "punchIn", zoomTo: 1.12 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-k",
-      source: "reel2",
-      trimBeforeSec: 16.0,
-      durationInFrames: 16,
-      effect: { type: "punchIn", zoomTo: 1.1 },
-    },
-    transitionAfter: { kind: "fade", durationInFrames: 5 },
-  },
-  {
-    scene: {
-      id: "peak-l",
-      source: "reel2",
-      trimBeforeSec: 18.4,
-      durationInFrames: 20,
-      effect: { type: "kenBurns", zoomTo: 1.07 },
-    },
-    transitionAfter: { kind: "wipe", direction: "from-top", durationInFrames: 10 },
+    transitionAfter: { kind: "wipe", direction: "from-top", durationInFrames: 24 },
   },
 
   // -------------------------------------------------------------- CLIMAX ---
-  // Slow-motion payoff on the party's biggest energy shot — the visual climax.
+  // Kid's cannonball flowing into the wide pool shot and the balcony wave,
+  // all in slow motion — the visual climax.
   {
     scene: {
       id: "climax",
       source: "reel2",
-      trimBeforeSec: 7.6,
-      durationInFrames: 120,
-      playbackRate: 0.5,
+      trimBeforeSec: 17.6,
+      durationInFrames: 150, // 5.0s
+      playbackRate: 0.4,
       muteVideo: true,
-      effect: { type: "punchIn", zoomTo: 1.08 },
+      effect: { type: "punchIn", zoomTo: 1.1 },
       caption: { kind: "climax", text: "PARTY LIKE NEVER BEFORE" },
     },
-    transitionAfter: { kind: "fade", durationInFrames: 14 },
+    transitionAfter: { kind: "fade", durationInFrames: 24 },
   },
 ];
 

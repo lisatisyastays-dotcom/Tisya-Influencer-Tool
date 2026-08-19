@@ -12,12 +12,13 @@ import type {
 
 const goldText: React.CSSProperties = {
   fontFamily: DISPLAY_FONT,
+  fontWeight: 800,
   backgroundImage: `linear-gradient(180deg, ${COLORS.goldSoft} 0%, ${COLORS.goldDeep} 100%)`,
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   color: "transparent",
   textShadow: "0px 6px 18px rgba(0,0,0,0.45)",
-  letterSpacing: 1,
+  letterSpacing: 0.5,
   margin: 0,
   textAlign: "center",
 };
@@ -36,6 +37,26 @@ export const BottomScrim: React.FC<{ heightPercent?: number; opacity?: number }>
       height: `${heightPercent}%`,
       background: `linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,${opacity}) 100%)`,
       pointerEvents: "none",
+    }}
+  />
+);
+
+/** The signature orange accent bar under every headline. Animates in with the text above it. */
+const Underline: React.FC<{ progress: number; width: number; marginTop?: number }> = ({
+  progress,
+  width,
+  marginTop = 16,
+}) => (
+  <div
+    style={{
+      width,
+      height: 6,
+      borderRadius: 999,
+      background: COLORS.orange,
+      margin: `${marginTop}px auto 0`,
+      transform: `scaleX(${Math.min(Math.max(progress, 0), 1)})`,
+      transformOrigin: "center",
+      boxShadow: "0px 2px 12px rgba(255,122,41,0.55)",
     }}
   />
 );
@@ -85,6 +106,7 @@ export const HookCaption: React.FC<{ caption: PopCaptionType }> = ({ caption }) 
         }}
       >
         <h1 style={{ ...goldText, fontSize: 138, lineHeight: 1 }}>{caption.text}</h1>
+        <Underline progress={pop} width={280} />
       </div>
     </div>
   );
@@ -110,6 +132,7 @@ export const TitleCaption: React.FC<{ caption: TitleCaptionType }> = ({ caption 
         }}
       >
         <h2 style={{ ...goldText, fontSize: 68, lineHeight: 1.05 }}>{caption.text}</h2>
+        <Underline progress={opacity} width={340} />
       </div>
     </div>
   );
@@ -152,6 +175,15 @@ export const TagCaption: React.FC<{ caption: TagCaptionType }> = ({ caption }) =
           {caption.text}
         </span>
       </div>
+      <div
+        style={{
+          width: 60,
+          height: 4,
+          borderRadius: 999,
+          background: COLORS.orange,
+          margin: "8px auto 0",
+        }}
+      />
     </div>
   );
 };
@@ -177,6 +209,7 @@ export const ClimaxCaption: React.FC<{ caption: ClimaxCaptionType }> = ({ captio
         }}
       >
         <h1 style={{ ...goldText, fontSize: 104, lineHeight: 1.02 }}>{caption.text}</h1>
+        <Underline progress={pop} width={380} />
       </div>
     </div>
   );
@@ -209,17 +242,18 @@ export const OutroCaption: React.FC<{ caption: OutroCaptionType }> = ({ caption 
               ...goldText,
               display: "inline-block",
               fontSize: 72,
-              letterSpacing: 4,
+              letterSpacing: 3,
             }}
           >
             {caption.brand}
           </span>
+          <Underline progress={brandOpacity} width={200} marginTop={10} />
         </div>
-        <div style={{ opacity: taglineOpacity, marginTop: 14 }}>
+        <div style={{ opacity: taglineOpacity, marginTop: 22 }}>
           <span
             style={{
               fontFamily: SUPPORT_FONT,
-              fontWeight: 700,
+              fontWeight: 600,
               fontSize: 34,
               color: COLORS.cream,
               textShadow: "0px 2px 10px rgba(0,0,0,0.6)",
@@ -241,7 +275,7 @@ export const OutroCaption: React.FC<{ caption: OutroCaptionType }> = ({ caption 
               fontFamily: SUPPORT_FONT,
               fontWeight: 800,
               fontSize: 30,
-              letterSpacing: 2,
+              letterSpacing: 1,
               color: COLORS.ink,
               background: `linear-gradient(180deg, ${COLORS.goldSoft} 0%, ${COLORS.gold} 100%)`,
               borderRadius: 999,
