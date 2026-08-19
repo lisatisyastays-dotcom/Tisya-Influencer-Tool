@@ -1,5 +1,4 @@
 import { staticFile } from "remotion";
-import type { WipeDirection } from "@remotion/transitions/wipe";
 
 /**
  * ============================================================================
@@ -105,9 +104,11 @@ export type SceneDef = {
   caption?: SceneCaption;
 };
 
-export type TransitionDef =
-  | { kind: "fade"; durationInFrames: number }
-  | { kind: "wipe"; direction: WipeDirection; durationInFrames: number };
+// Every cut is a single, restrained crossfade (springTiming, see
+// Composition.tsx) — no directional wipes/slides. That consistency, plus a
+// slower, spring-eased glide rather than a linear dissolve, is what reads as
+// "smooth" and premium instead of a social-media-style transition effect.
+export type TransitionDef = { kind: "fade"; durationInFrames: number };
 
 type TimelineEntry = { scene: SceneDef; transitionAfter?: TransitionDef };
 
@@ -134,7 +135,7 @@ const TIMELINE: TimelineEntry[] = [
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
     },
-    transitionAfter: { kind: "wipe", direction: "from-bottom", durationInFrames: 24 },
+    transitionAfter: { kind: "fade", durationInFrames: 28 },
   },
 
   // ------------------------------------------------------------ BUILD-UP ---
@@ -150,7 +151,7 @@ const TIMELINE: TimelineEntry[] = [
       muteVideo: true,
       effect: { type: "kenBurns", zoomTo: 1.06, panXPercent: 1.5 },
     },
-    transitionAfter: { kind: "fade", durationInFrames: 20 },
+    transitionAfter: { kind: "fade", durationInFrames: 28 },
   },
   {
     scene: {
@@ -162,7 +163,7 @@ const TIMELINE: TimelineEntry[] = [
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
     },
-    transitionAfter: { kind: "fade", durationInFrames: 20 },
+    transitionAfter: { kind: "fade", durationInFrames: 28 },
   },
 
   // ----------------------------------------------------------------- PEAK ---
@@ -176,7 +177,7 @@ const TIMELINE: TimelineEntry[] = [
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.08 },
     },
-    transitionAfter: { kind: "wipe", direction: "from-top", durationInFrames: 24 },
+    transitionAfter: { kind: "fade", durationInFrames: 28 },
   },
 
   // -------------------------------------------------------------- CLIMAX ---
@@ -192,7 +193,7 @@ const TIMELINE: TimelineEntry[] = [
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
     },
-    transitionAfter: { kind: "fade", durationInFrames: 24 },
+    transitionAfter: { kind: "fade", durationInFrames: 28 },
   },
 ];
 

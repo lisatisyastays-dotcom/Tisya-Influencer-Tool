@@ -1,8 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Composition } from "remotion";
-import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { TransitionSeries, springTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
-import { wipe } from "@remotion/transitions/wipe";
 import {
   FPS,
   HEIGHT,
@@ -30,16 +29,17 @@ export const PartyPromoReel: React.FC = () => {
               <TransitionSeries.Sequence durationInFrames={scene.durationInFrames}>
                 <Scene scene={scene} />
               </TransitionSeries.Sequence>
-              {transition?.kind === "fade" ? (
+              {transition ? (
                 <TransitionSeries.Transition
                   presentation={fade()}
-                  timing={linearTiming({ durationInFrames: transition.durationInFrames })}
-                />
-              ) : null}
-              {transition?.kind === "wipe" ? (
-                <TransitionSeries.Transition
-                  presentation={wipe({ direction: transition.direction })}
-                  timing={linearTiming({ durationInFrames: transition.durationInFrames })}
+                  // A damped spring (no overshoot) glides into the dissolve
+                  // instead of blending at a constant linear rate — that
+                  // ease is what makes the cut feel smooth and deliberate
+                  // rather than mechanical.
+                  timing={springTiming({
+                    durationInFrames: transition.durationInFrames,
+                    config: { damping: 200 },
+                  })}
                 />
               ) : null}
             </React.Fragment>
