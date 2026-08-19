@@ -106,12 +106,13 @@ type TimelineEntry = { scene: SceneDef; transitionAfter?: TransitionDef };
 // HOOK + BUILD-UP + PEAK — every scene except the closing outro card.
 // Reordering, trimming, or re-timing the edit happens here.
 // ----------------------------------------------------------------------------
-// Every reel2 (party) shot below is played back slowed down (playbackRate
-// well under 1) so that ~1.5-2s of real source action fills a full 3-5s of
-// screen time without the clip visibly "running out" of new motion or
-// jump-cutting into unrelated footage mid-shot. This is also what fixes the
-// pacing itself feeling frantic — it's not just a longer hold, the motion is
-// genuinely slower and more cinematic.
+// Each shot below plays back close to real time (playbackRate as close to 1
+// as the footage allows) so the motion matches the energy of the original
+// reels — only slowed just enough that a clip doesn't run out of coherent
+// source material and jump-cut into unrelated footage before its hold ends.
+// That per-clip ceiling is why the rates differ: hook/villa/cheers have a
+// few seconds of clean runway before the next moment in the source footage,
+// dj/climax have less room before the next scene's own footage starts.
 const TIMELINE: TimelineEntry[] = [
   // ---------------------------------------------------------------- HOOK ---
   // The dive into the group's arms-up cheer, in slow motion — the single
@@ -122,7 +123,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 8.3,
       durationInFrames: 120, // 4.0s
-      playbackRate: 0.4,
+      playbackRate: 0.9,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
       caption: { kind: "pop", text: "LET'S PARTY", brand: "TISYA STAYS" },
@@ -139,7 +140,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel1",
       trimBeforeSec: 8.0,
       durationInFrames: 120, // 4.0s
-      playbackRate: 0.45,
+      playbackRate: 0.9,
       muteVideo: true,
       effect: { type: "kenBurns", zoomTo: 1.06, panXPercent: 1.5 },
       caption: { kind: "title", text: "STAY. SIP. CELEBRATE." },
@@ -150,9 +151,9 @@ const TIMELINE: TimelineEntry[] = [
     scene: {
       id: "cheers",
       source: "reel2",
-      trimBeforeSec: 13.0,
+      trimBeforeSec: 12.2,
       durationInFrames: 120, // 4.0s
-      playbackRate: 0.4,
+      playbackRate: 0.75,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
     },
@@ -166,7 +167,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 15.3,
       durationInFrames: 135, // 4.5s
-      playbackRate: 0.4,
+      playbackRate: 0.48,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.08 },
       caption: { kind: "tag", text: "LIVE DJ" },
@@ -183,7 +184,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 17.6,
       durationInFrames: 150, // 5.0s
-      playbackRate: 0.4,
+      playbackRate: 0.45,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
       caption: { kind: "climax", text: "PARTY LIKE NEVER BEFORE" },
@@ -201,7 +202,7 @@ const OUTRO_MIN_FRAMES = 60;
 // Kept low so a long text-hold outro never plays past the end of reel-1's
 // source footage (trimBeforeSec + durationInFrames * rate must stay within
 // REEL_1_DURATION_SEC).
-const OUTRO_PLAYBACK_RATE = 0.5;
+const OUTRO_PLAYBACK_RATE = 0.55;
 
 const fixedScenesFrames = TIMELINE.reduce((sum, t) => sum + t.scene.durationInFrames, 0);
 const fixedTransitionsFrames = TIMELINE.reduce(

@@ -12,7 +12,7 @@ import type {
 
 const goldText: React.CSSProperties = {
   fontFamily: DISPLAY_FONT,
-  fontWeight: 800,
+  fontWeight: 400,
   backgroundImage: `linear-gradient(180deg, ${COLORS.goldSoft} 0%, ${COLORS.goldDeep} 100%)`,
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
@@ -83,7 +83,7 @@ export const HookCaption: React.FC<{ caption: PopCaptionType }> = ({ caption }) 
         <span
           style={{
             fontFamily: SUPPORT_FONT,
-            fontWeight: 800,
+            fontWeight: 400,
             fontSize: 30,
             letterSpacing: 8,
             color: COLORS.cream,
@@ -165,7 +165,7 @@ export const TagCaption: React.FC<{ caption: TagCaptionType }> = ({ caption }) =
         <span
           style={{
             fontFamily: SUPPORT_FONT,
-            fontWeight: 800,
+            fontWeight: 400,
             fontSize: 28,
             letterSpacing: 3,
             color: COLORS.cream,
@@ -253,7 +253,7 @@ export const OutroCaption: React.FC<{ caption: OutroCaptionType }> = ({ caption 
           <span
             style={{
               fontFamily: SUPPORT_FONT,
-              fontWeight: 600,
+              fontWeight: 400,
               fontSize: 34,
               color: COLORS.cream,
               textShadow: "0px 2px 10px rgba(0,0,0,0.6)",
@@ -273,7 +273,7 @@ export const OutroCaption: React.FC<{ caption: OutroCaptionType }> = ({ caption 
             style={{
               display: "inline-block",
               fontFamily: SUPPORT_FONT,
-              fontWeight: 800,
+              fontWeight: 400,
               fontSize: 30,
               letterSpacing: 1,
               color: COLORS.ink,
