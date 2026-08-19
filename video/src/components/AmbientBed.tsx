@@ -1,6 +1,6 @@
 import React from "react";
 import { Audio, staticFile, interpolate } from "remotion";
-import { TOTAL_DURATION_IN_FRAMES } from "../edit-config";
+import { END_FADE_FRAMES, TOTAL_DURATION_IN_FRAMES } from "../edit-config";
 
 /**
  * Continuous low-volume ambience so there's never a dead-silent gap under the
@@ -19,7 +19,6 @@ const AMBIENT_BED_SRC = staticFile("ambient-bed.webm");
 
 const AMBIENT_BED_VOLUME = 0.22;
 const MUSIC_TRACK_VOLUME = 0.55;
-const FADE_FRAMES = 20;
 
 export const AmbientBed: React.FC = () => {
   const src = MUSIC_TRACK_SRC ?? AMBIENT_BED_SRC;
@@ -32,7 +31,7 @@ export const AmbientBed: React.FC = () => {
       volume={(frame: number) =>
         interpolate(
           frame,
-          [0, FADE_FRAMES, TOTAL_DURATION_IN_FRAMES - FADE_FRAMES, TOTAL_DURATION_IN_FRAMES],
+          [0, END_FADE_FRAMES, TOTAL_DURATION_IN_FRAMES - END_FADE_FRAMES, TOTAL_DURATION_IN_FRAMES],
           [0, peakVolume, peakVolume, 0],
           { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
         )

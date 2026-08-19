@@ -6,18 +6,20 @@ import type { WipeDirection } from "@remotion/transitions/wipe";
  * PARTY PROMO REEL — EDIT CONFIG
  * ============================================================================
  * This file is the single source of truth for the whole edit: cut order,
- * trim points, on-screen duration, camera effect, and text for every shot.
- * The composition's total duration is *derived* from this list (see
- * `TOTAL_DURATION_IN_FRAMES` at the bottom), so re-timing the edit is just a
- * matter of editing the numbers below — nothing else needs to change.
+ * trim points, on-screen duration, and camera effect for every shot. There
+ * is no text/caption layer in this cut — it's footage-only, closing on a
+ * fade to black (see `FadeToBlack` in Composition.tsx). The composition's
+ * total duration is *derived* from this list (see `TOTAL_DURATION_IN_FRAMES`
+ * at the bottom), so re-timing the edit is just a matter of editing the
+ * numbers below — nothing else needs to change.
  *
  * Structure follows a hook -> build-up -> party peak -> outro arc, with each
- * shot held 3-5s (slowed down, not just cut faster) so the edit reads as a
- * handful of deliberate, cinematic moments rather than a rapid-fire montage:
+ * shot held 3-5s so the edit reads as a handful of deliberate, cinematic
+ * moments rather than a rapid-fire montage:
  *   HOOK      the most attention-grabbing shot
  *   BUILD-UP  villa + party alternation, energy rising
  *   PEAK      the party's best moments, climax hold
- *   OUTRO     strongest closing shot + brand / CTA card
+ *   OUTRO     strongest closing shot, fading to black
  *
  * The last scene (OUTRO) has no fixed duration — it automatically fills
  * whatever time is left so the composition always lands on exactly 25s.
@@ -28,6 +30,10 @@ export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
 export const TARGET_DURATION_SECONDS = 25;
+// How long the very end of the reel takes to fade to black/silent — shared
+// by the video fade (Composition.tsx) and the audio fade (AmbientBed.tsx)
+// so picture and sound land together.
+export const END_FADE_FRAMES = 20;
 
 // Source clips, both native 720x1280 (9:16) @ 30fps.
 export const REEL_1 = staticFile("reel-1.mp4"); // villa / property showcase, 28.67s
@@ -106,13 +112,11 @@ type TimelineEntry = { scene: SceneDef; transitionAfter?: TransitionDef };
 // HOOK + BUILD-UP + PEAK — every scene except the closing outro card.
 // Reordering, trimming, or re-timing the edit happens here.
 // ----------------------------------------------------------------------------
-// Each shot below plays back close to real time (playbackRate as close to 1
-// as the footage allows) so the motion matches the energy of the original
-// reels — only slowed just enough that a clip doesn't run out of coherent
-// source material and jump-cut into unrelated footage before its hold ends.
-// That per-clip ceiling is why the rates differ: hook/villa/cheers have a
-// few seconds of clean runway before the next moment in the source footage,
-// dj/climax have less room before the next scene's own footage starts.
+// Each shot below plays back in gentle slow motion (playbackRate under 1)
+// so a 3-5s hold never runs out of coherent source material and jump-cuts
+// into unrelated footage. Rates differ per clip because dj/climax have less
+// clean runway in the source before the next scene's own footage starts, so
+// they're slowed more to stay inside their own window.
 const TIMELINE: TimelineEntry[] = [
   // ---------------------------------------------------------------- HOOK ---
   // The dive into the group's arms-up cheer, in slow motion — the single
@@ -123,10 +127,9 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 8.3,
       durationInFrames: 120, // 4.0s
-      playbackRate: 0.9,
+      playbackRate: 0.6,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
-      caption: { kind: "pop", text: "LET'S PARTY", brand: "TISYA STAYS" },
     },
     transitionAfter: { kind: "wipe", direction: "from-bottom", durationInFrames: 24 },
   },
@@ -140,10 +143,9 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel1",
       trimBeforeSec: 8.0,
       durationInFrames: 120, // 4.0s
-      playbackRate: 0.9,
+      playbackRate: 0.6,
       muteVideo: true,
       effect: { type: "kenBurns", zoomTo: 1.06, panXPercent: 1.5 },
-      caption: { kind: "title", text: "STAY. SIP. CELEBRATE." },
     },
     transitionAfter: { kind: "fade", durationInFrames: 20 },
   },
@@ -153,7 +155,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 12.2,
       durationInFrames: 120, // 4.0s
-      playbackRate: 0.75,
+      playbackRate: 0.5,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
     },
@@ -167,10 +169,9 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 15.3,
       durationInFrames: 135, // 4.5s
-      playbackRate: 0.48,
+      playbackRate: 0.35,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.08 },
-      caption: { kind: "tag", text: "LIVE DJ" },
     },
     transitionAfter: { kind: "wipe", direction: "from-top", durationInFrames: 24 },
   },
@@ -184,25 +185,24 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 17.6,
       durationInFrames: 150, // 5.0s
-      playbackRate: 0.45,
+      playbackRate: 0.3,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
-      caption: { kind: "climax", text: "PARTY LIKE NEVER BEFORE" },
     },
     transitionAfter: { kind: "fade", durationInFrames: 24 },
   },
 ];
 
 // ----------------------------------------------------------------------------
-// OUTRO — closes on the villa at golden hour in gentle slow motion, holding
-// for the brand + CTA card. Duration auto-fills whatever time remains so the
-// whole composition always totals exactly TARGET_DURATION_SECONDS.
+// OUTRO — closes on the villa in gentle slow motion, then fades to black
+// (see FadeToBlack in Composition.tsx). Duration auto-fills whatever time
+// remains so the whole composition always totals TARGET_DURATION_SECONDS.
 // ----------------------------------------------------------------------------
 const OUTRO_MIN_FRAMES = 60;
 // Kept low so a long text-hold outro never plays past the end of reel-1's
 // source footage (trimBeforeSec + durationInFrames * rate must stay within
 // REEL_1_DURATION_SEC).
-const OUTRO_PLAYBACK_RATE = 0.55;
+const OUTRO_PLAYBACK_RATE = 0.35;
 
 const fixedScenesFrames = TIMELINE.reduce((sum, t) => sum + t.scene.durationInFrames, 0);
 const fixedTransitionsFrames = TIMELINE.reduce(
@@ -228,12 +228,6 @@ const OUTRO_SCENE: SceneDef = {
   playbackRate: OUTRO_PLAYBACK_RATE,
   muteVideo: true,
   effect: { type: "kenBurns", zoomTo: 1.06, panYPercent: -1 },
-  caption: {
-    kind: "outro",
-    brand: "TISYA STAYS",
-    tagline: "Your Next Celebration Starts Here",
-    cta: "BOOK NOW — LINK IN BIO",
-  },
 };
 
 export const SCENES: SceneDef[] = [...TIMELINE.map((t) => t.scene), OUTRO_SCENE];

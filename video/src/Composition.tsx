@@ -14,6 +14,7 @@ import {
 import { Scene } from "./components/Scene";
 import { Vignette } from "./components/Vignette";
 import { AmbientBed } from "./components/AmbientBed";
+import { FadeToBlack } from "./components/FadeToBlack";
 
 export const PartyPromoReel: React.FC = () => {
   return (
@@ -44,6 +45,7 @@ export const PartyPromoReel: React.FC = () => {
       </TransitionSeries>
       <Vignette />
       <AmbientBed />
+      <FadeToBlack totalFrames={TOTAL_DURATION_IN_FRAMES} />
     </AbsoluteFill>
   );
 };
