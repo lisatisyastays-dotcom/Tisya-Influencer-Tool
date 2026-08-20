@@ -173,7 +173,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 15.3,
       durationInFrames: 135, // 4.5s
-      playbackRate: 0.35,
+      playbackRate: 0.48,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.08 },
     },
@@ -189,7 +189,7 @@ const TIMELINE: TimelineEntry[] = [
       source: "reel2",
       trimBeforeSec: 17.6,
       durationInFrames: 150, // 5.0s
-      playbackRate: 0.3,
+      playbackRate: 0.45,
       muteVideo: true,
       effect: { type: "punchIn", zoomTo: 1.1 },
     },
@@ -206,7 +206,7 @@ const OUTRO_MIN_FRAMES = 60;
 // Kept low so a long text-hold outro never plays past the end of reel-1's
 // source footage (trimBeforeSec + durationInFrames * rate must stay within
 // REEL_1_DURATION_SEC).
-const OUTRO_PLAYBACK_RATE = 0.35;
+const OUTRO_PLAYBACK_RATE = 0.48;
 
 const fixedScenesFrames = TIMELINE.reduce((sum, t) => sum + t.scene.durationInFrames, 0);
 const fixedTransitionsFrames = TIMELINE.reduce(
