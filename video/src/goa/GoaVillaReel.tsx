@@ -8,8 +8,8 @@ import { FPS, HEIGHT, TRANSITION_FRAMES, WIDTH } from "./constants";
 // `durationInFrames` is how long it's on screen (at 30fps) including the
 // crossfade into the next scene.
 //
-// Scenes 4 (Pool Moment) and 6 (Sunset) don't have footage yet — they render
-// as placeholder cards. When those clips arrive:
+// Scene 6 (Sunset) doesn't have footage yet — it renders as a placeholder
+// card. When that clip arrives:
 //   1. Drop the file into video/public/goa/
 //   2. Swap the <PlaceholderScene> below for a <ClipScene src="goa/<file>.mp4" .../>
 const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean) => React.ReactNode }[] = [
@@ -46,9 +46,10 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
   },
   {
     key: "pool-moment",
-    durationInFrames: 85,
-    // Needs: someone relaxing / swimming / sitting by the pool.
-    render: (fadeOut) => <PlaceholderScene durationInFrames={85} label="Pool Moment" fadeOut={fadeOut} />,
+    durationInFrames: 100,
+    render: (fadeOut) => (
+      <ClipScene src="goa/goa-pool.mp4" durationInFrames={100} fadeOut={fadeOut} />
+    ),
   },
   {
     key: "goa-experience",
