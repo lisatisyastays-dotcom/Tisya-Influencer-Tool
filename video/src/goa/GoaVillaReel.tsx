@@ -1,6 +1,5 @@
 import { AbsoluteFill, Composition, Series } from "remotion";
 import { ClipScene } from "./ClipScene";
-import { HeroScene } from "./HeroScene";
 import { FPS, HEIGHT, TRANSITION_FRAMES, WIDTH } from "./constants";
 
 // The 8-scene Goa villa shot list. Each entry is one beat of the reel;
@@ -111,12 +110,14 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
   },
   {
     key: "hero-ending",
-    durationInFrames: 110,
+    durationInFrames: 70,
     render: () => (
-      <HeroScene
-        src="goa/goa-hero-poolside.jpg"
-        durationInFrames={110}
+      <ClipScene
+        src="goa/goa-hero-bedroom.mp4"
+        durationInFrames={70}
         caption="Your Goa escape starts here."
+        captionPosition="center"
+        fadeOut={false}
       />
     ),
   },
