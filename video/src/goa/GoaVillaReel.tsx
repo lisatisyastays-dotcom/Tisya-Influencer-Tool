@@ -17,7 +17,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-arrival.mp4"
         durationInFrames={100}
-        caption="Trade chaos for coastlines."
+        caption="Chaos to coastlines."
         fadeOut={fadeOut}
       />
     ),
@@ -29,7 +29,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-hero-bedroom.mp4"
         durationInFrames={70}
-        caption="Discover our private oasis."
+        caption="Your private oasis."
         fadeOut={fadeOut}
       />
     ),
@@ -41,7 +41,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-villa-interior.mp4"
         durationInFrames={95}
-        caption="Designed for easy living."
+        caption="Easy living, designed."
         fadeOut={fadeOut}
       />
     ),
@@ -53,7 +53,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-villa-exterior.mp4"
         durationInFrames={100}
-        caption="Midday sun, clear waters."
+        caption="Sun. Clear waters."
         fadeOut={fadeOut}
       />
     ),
@@ -67,7 +67,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
           <ClipScene
             src="goa/goa-cafe-1.mp4"
             durationInFrames={65}
-            caption="Wander where time slows."
+            caption="Where time slows."
             fadeOut={false}
           />
         </Series.Sequence>
@@ -89,7 +89,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-sunset.mp4"
         durationInFrames={85}
-        caption="Where the day turns to dream."
+        caption="Day turns to dream."
         fadeOut={fadeOut}
       />
     ),
@@ -102,7 +102,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
         src="goa/goa-villa-dinner.mp4"
         durationInFrames={115}
         trimBefore={90}
-        caption="Quiet evenings, shared laughter."
+        caption="Quiet evenings, laughter."
         fadeOut={fadeOut}
       />
     ),
@@ -114,8 +114,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-pool.mp4"
         durationInFrames={130}
-        caption="Claim your Goa retreat."
-        captionPosition="center"
+        caption="Claim your retreat."
         fadeOut={false}
       />
     ),
