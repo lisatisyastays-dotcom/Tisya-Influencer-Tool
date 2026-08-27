@@ -1,6 +1,5 @@
 import { AbsoluteFill, Composition, Series } from "remotion";
 import { ClipScene } from "./ClipScene";
-import { PlaceholderScene } from "./PlaceholderScene";
 import { HeroScene } from "./HeroScene";
 import { FPS, HEIGHT, TRANSITION_FRAMES, WIDTH } from "./constants";
 
@@ -8,10 +7,9 @@ import { FPS, HEIGHT, TRANSITION_FRAMES, WIDTH } from "./constants";
 // `durationInFrames` is how long it's on screen (at 30fps) including the
 // crossfade into the next scene.
 //
-// Scene 6 (Sunset) doesn't have footage yet — it renders as a placeholder
-// card. When that clip arrives:
-//   1. Drop the file into video/public/goa/
-//   2. Swap the <PlaceholderScene> below for a <ClipScene src="goa/<file>.mp4" .../>
+// All 8 scenes now have real footage. To swap in a better take for any
+// scene later: drop the file into video/public/goa/ and update its
+// <ClipScene src="goa/<file>.mp4" .../> below.
 const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean) => React.ReactNode }[] = [
   {
     key: "arrival",
@@ -89,9 +87,14 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
   {
     key: "sunset",
     durationInFrames: 85,
-    // Needs: beach sunset, people walking/relaxing.
-    // Once the clip lands, swap in <ClipScene caption="Golden hour, every evening" ... />
-    render: (fadeOut) => <PlaceholderScene durationInFrames={85} label="Sunset" fadeOut={fadeOut} />,
+    render: (fadeOut) => (
+      <ClipScene
+        src="goa/goa-sunset.mp4"
+        durationInFrames={85}
+        caption="Golden hour, every evening"
+        fadeOut={fadeOut}
+      />
+    ),
   },
   {
     key: "back-at-villa",
