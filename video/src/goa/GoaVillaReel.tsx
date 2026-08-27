@@ -24,11 +24,11 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
   },
   {
     key: "villa-reveal",
-    durationInFrames: 130,
+    durationInFrames: 70,
     render: (fadeOut) => (
       <ClipScene
-        src="goa/goa-villa-exterior.mp4"
-        durationInFrames={130}
+        src="goa/goa-hero-bedroom.mp4"
+        durationInFrames={70}
         caption="Discover our private oasis."
         fadeOut={fadeOut}
       />
@@ -109,11 +109,11 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
   },
   {
     key: "hero-ending",
-    durationInFrames: 70,
+    durationInFrames: 130,
     render: () => (
       <ClipScene
-        src="goa/goa-hero-bedroom.mp4"
-        durationInFrames={70}
+        src="goa/goa-villa-exterior.mp4"
+        durationInFrames={130}
         caption="Claim your Goa retreat."
         captionPosition="center"
         fadeOut={false}
