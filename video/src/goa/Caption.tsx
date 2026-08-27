@@ -26,11 +26,11 @@ export const Caption: React.FC<Props> = ({ text, position = "lower" }) => {
           right: 0,
           bottom: position === "lower" ? 0 : undefined,
           top: position === "center" ? 0 : undefined,
-          height: "46%",
+          height: "32%",
           background:
             position === "lower"
-              ? "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%)"
-              : "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 100%)",
+              ? "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%)"
+              : "linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%)",
         }}
       />
       <div
@@ -38,27 +38,27 @@ export const Caption: React.FC<Props> = ({ text, position = "lower" }) => {
           position: "absolute",
           left: 80,
           right: 80,
-          bottom: position === "lower" ? 140 : undefined,
+          bottom: position === "lower" ? 320 : undefined,
           top: position === "center" ? "42%" : undefined,
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
-          gap: 16,
+          gap: 14,
           opacity,
           transform: `translateY(${translateY}px)`,
         }}
       >
-        <div style={{ width: 44, height: 6, borderRadius: 3, backgroundImage: COLORS.gradient }} />
+        <div style={{ width: 36, height: 5, borderRadius: 2.5, backgroundImage: COLORS.gradient }} />
         <div
           style={{
             fontFamily:
               '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
-            fontSize: 84,
-            fontWeight: 800,
-            lineHeight: 1.08,
+            fontSize: 58,
+            fontWeight: 700,
+            lineHeight: 1.22,
             color: "#FFFFFF",
-            textShadow: "0 4px 24px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.6)",
-            letterSpacing: -0.5,
+            textShadow: "0 2px 14px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.6)",
+            letterSpacing: -0.2,
           }}
         >
           {text}
