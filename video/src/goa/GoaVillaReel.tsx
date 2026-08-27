@@ -17,7 +17,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
       <ClipScene
         src="goa/goa-arrival.mp4"
         durationInFrames={100}
-        caption="Trade chaos for coastlines."
+        caption="Trade chaos for Goan countryside."
         fadeOut={fadeOut}
       />
     ),
