@@ -51,7 +51,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
     durationInFrames: 100,
     render: (fadeOut) => (
       <ClipScene
-        src="goa/goa-pool.mp4"
+        src="goa/goa-villa-exterior.mp4"
         durationInFrames={100}
         caption="Midday sun, clear waters."
         fadeOut={fadeOut}
@@ -112,7 +112,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
     durationInFrames: 130,
     render: () => (
       <ClipScene
-        src="goa/goa-villa-exterior.mp4"
+        src="goa/goa-pool.mp4"
         durationInFrames={130}
         caption="Claim your Goa retreat."
         captionPosition="center"
