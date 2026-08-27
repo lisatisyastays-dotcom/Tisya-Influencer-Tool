@@ -41,14 +41,24 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
     key: "villa-interior",
     durationInFrames: 95,
     render: (fadeOut) => (
-      <ClipScene src="goa/goa-villa-interior.mp4" durationInFrames={95} fadeOut={fadeOut} />
+      <ClipScene
+        src="goa/goa-villa-interior.mp4"
+        durationInFrames={95}
+        caption="Every corner made for slow living"
+        fadeOut={fadeOut}
+      />
     ),
   },
   {
     key: "pool-moment",
     durationInFrames: 100,
     render: (fadeOut) => (
-      <ClipScene src="goa/goa-pool.mp4" durationInFrames={100} fadeOut={fadeOut} />
+      <ClipScene
+        src="goa/goa-pool.mp4"
+        durationInFrames={100}
+        caption="Evenings made for the pool"
+        fadeOut={fadeOut}
+      />
     ),
   },
   {
@@ -57,10 +67,21 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
     render: (fadeOut) => (
       <Series>
         <Series.Sequence durationInFrames={65}>
-          <ClipScene src="goa/goa-cafe-1.mp4" durationInFrames={65} fadeOut={false} />
+          <ClipScene
+            src="goa/goa-cafe-1.mp4"
+            durationInFrames={65}
+            caption="Slow mornings…"
+            fadeOut={false}
+          />
         </Series.Sequence>
         <Series.Sequence durationInFrames={80}>
-          <ClipScene src="goa/goa-cafe-2.mp4" durationInFrames={80} trimBefore={10} fadeOut={fadeOut} />
+          <ClipScene
+            src="goa/goa-cafe-2.mp4"
+            durationInFrames={80}
+            trimBefore={10}
+            caption="…and good coffee"
+            fadeOut={fadeOut}
+          />
         </Series.Sequence>
       </Series>
     ),
@@ -69,6 +90,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
     key: "sunset",
     durationInFrames: 85,
     // Needs: beach sunset, people walking/relaxing.
+    // Once the clip lands, swap in <ClipScene caption="Golden hour, every evening" ... />
     render: (fadeOut) => <PlaceholderScene durationInFrames={85} label="Sunset" fadeOut={fadeOut} />,
   },
   {
@@ -79,6 +101,7 @@ const scenes: { key: string; durationInFrames: number; render: (fadeOut: boolean
         src="goa/goa-villa-dinner.mp4"
         durationInFrames={115}
         trimBefore={90}
+        caption="Back at the villa, toasting the day"
         fadeOut={fadeOut}
       />
     ),

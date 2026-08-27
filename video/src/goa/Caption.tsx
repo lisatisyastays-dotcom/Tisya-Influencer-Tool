@@ -1,5 +1,5 @@
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { COLORS } from "./constants";
+import { COLORS, TRANSITION_FRAMES } from "./constants";
 
 type Props = {
   readonly text: string;
@@ -11,7 +11,9 @@ export const Caption: React.FC<Props> = ({ text, position = "lower" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const progress = spring({ frame, fps, config: { damping: 200 } });
+  // Hold off until the incoming clip's crossfade has finished, so this
+  // caption doesn't animate in on top of the outgoing scene's still-fading text.
+  const progress = spring({ frame: Math.max(0, frame - TRANSITION_FRAMES), fps, config: { damping: 200 } });
   const opacity = interpolate(progress, [0, 1], [0, 1]);
   const translateY = interpolate(progress, [0, 1], [24, 0]);
 
