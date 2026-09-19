@@ -17,8 +17,7 @@ export type ClipData = {
   durationInFrames: number;
 };
 
-export const PROPERTY_NAME = "[PROPERTY NAME]";
-export const PROPERTY_TAGLINE = "[PROPERTY TAGLINE]";
+export const INTRO_TITLE = "Take the Tour";
 export const OUTRO_CTA = "Book your stay — link in bio";
 
 export const clips: ClipData[] = [

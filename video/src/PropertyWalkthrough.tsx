@@ -4,7 +4,7 @@ import { AbsoluteFill, CalculateMetadataFunction, Composition } from "remotion";
 import { ClipScene } from "./components/ClipScene";
 import { IntroCard } from "./components/IntroCard";
 import { OutroCard } from "./components/OutroCard";
-import { clips, OUTRO_CTA, PROPERTY_NAME, PROPERTY_TAGLINE } from "./clips";
+import { clips, INTRO_TITLE, OUTRO_CTA } from "./clips";
 
 const FPS = 30;
 const TRANSITION_FRAMES = 15;
@@ -61,7 +61,7 @@ export const PropertyWalkthrough: React.FC<Props> = () => {
   return (
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={INTRO_FRAMES}>
-        <IntroCard propertyName={PROPERTY_NAME} tagline={PROPERTY_TAGLINE} />
+        <IntroCard title={INTRO_TITLE} />
       </TransitionSeries.Sequence>
 
       {clips.flatMap((clip, index) => [
@@ -80,7 +80,7 @@ export const PropertyWalkthrough: React.FC<Props> = () => {
         timing={linearTiming({ durationInFrames: TRANSITION_FRAMES })}
       />
       <TransitionSeries.Sequence durationInFrames={OUTRO_FRAMES}>
-        <OutroCard propertyName={PROPERTY_NAME} cta={OUTRO_CTA} />
+        <OutroCard cta={OUTRO_CTA} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
   );
