@@ -21,6 +21,9 @@ export const INTRO_TITLE = "Take the Tour";
 export const OUTRO_CTA = "Book your stay — link in bio";
 
 export const clips: ClipData[] = [
-  // Example of what an entry looks like once a clip is added:
-  // { src: "01-exterior.mp4", label: "Welcome Home", durationInFrames: 90 },
+  { src: "01-entrance.mp4", label: "Welcome Home", durationInFrames: 90 },
+  { src: "02-chandeliers.mp4", label: "Statement Lighting", durationInFrames: 90 },
+  { src: "03-kitchen.mp4", label: "The Kitchen", durationInFrames: 105 },
+  { src: "04-master-bedroom.mp4", label: "Master Bedroom", durationInFrames: 105 },
+  { src: "05-master-bedroom-2.mp4", label: "Master Suite", durationInFrames: 90 },
 ];
