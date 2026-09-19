@@ -23,6 +23,7 @@ export const OUTRO_CTA = "Book your stay — link in bio";
 export const clips: ClipData[] = [
   { src: "01-entrance.mp4", label: "Welcome Home", durationInFrames: 90 },
   { src: "02-chandeliers.mp4", label: "Statement Lighting", durationInFrames: 90 },
+  { src: "11-dining-area.mp4", label: "Dining Area", durationInFrames: 90 },
   { src: "03-kitchen.mp4", label: "The Kitchen", durationInFrames: 105 },
   { src: "04-master-bedroom.mp4", label: "Master Bedroom", durationInFrames: 105 },
   { src: "05-master-bedroom-2.mp4", label: "Master Suite", durationInFrames: 90 },
@@ -31,6 +32,5 @@ export const clips: ClipData[] = [
   { src: "08-washroom-1.mp4", label: "En-suite", durationInFrames: 90 },
   { src: "09-bedroom-2.mp4", label: "Bedroom Three", durationInFrames: 105 },
   { src: "10-washroom-2.mp4", label: "En-suite", durationInFrames: 90 },
-  { src: "11-dining-area.mp4", label: "Dining Area", durationInFrames: 90 },
   { src: "12-pool.mp4", label: "The Pool", durationInFrames: 90 },
 ];
