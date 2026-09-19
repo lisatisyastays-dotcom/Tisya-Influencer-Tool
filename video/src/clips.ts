@@ -26,4 +26,9 @@ export const clips: ClipData[] = [
   { src: "03-kitchen.mp4", label: "The Kitchen", durationInFrames: 105 },
   { src: "04-master-bedroom.mp4", label: "Master Bedroom", durationInFrames: 105 },
   { src: "05-master-bedroom-2.mp4", label: "Master Suite", durationInFrames: 90 },
+  { src: "06-washroom-master-bedroom.mp4", label: "Master Ensuite", durationInFrames: 90 },
+  { src: "07-bedroom-1.mp4", label: "Bedroom Two", durationInFrames: 105 },
+  { src: "08-washroom-1.mp4", label: "En-suite", durationInFrames: 90 },
+  { src: "09-bedroom-2.mp4", label: "Bedroom Three", durationInFrames: 105 },
+  { src: "10-washroom-2.mp4", label: "En-suite", durationInFrames: 90 },
 ];
