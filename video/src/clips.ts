@@ -21,7 +21,7 @@ export const INTRO_TITLE = "Take the Tour";
 export const OUTRO_CTA = "Book your stay — link in bio";
 
 export const clips: ClipData[] = [
-  { src: "01-entrance.mp4", label: "Welcome Home", durationInFrames: 90 },
+  { src: "01-entrance.mp4", label: "Welcome Home", durationInFrames: 390 },
   { src: "02-chandeliers.mp4", label: "Statement Lighting", durationInFrames: 90 },
   { src: "11-dining-area.mp4", label: "Dining Area", durationInFrames: 90 },
   { src: "03-kitchen.mp4", label: "The Kitchen", durationInFrames: 105 },
