@@ -11,8 +11,9 @@ export type ReelClipData = {
   durationInFrames: number;
 };
 
-export const HOOK_TEXT = "Got plans for the Gandhi Jayanti long weekend?";
+export const HOOK_TEXT = "Got Plans For The Long Weekend?";
 
 export const reelClips: ReelClipData[] = [
+  { src: "00-goa-entrance.mp4", durationInFrames: 150 },
   { src: "01-friends-walkway.mp4", durationInFrames: 280 },
 ];
