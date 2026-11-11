@@ -16,4 +16,9 @@ export const HOOK_TEXT = "Got Plans For The Long Weekend?";
 export const reelClips: ReelClipData[] = [
   { src: "00-goa-entrance.mp4", durationInFrames: 150 },
   { src: "01-friends-walkway.mp4", durationInFrames: 280 },
+  { src: "02-clip-4.mp4", durationInFrames: 110 },
+  { src: "03-clip-5.mp4", durationInFrames: 108 },
+  { src: "04-clip-6.mp4", durationInFrames: 152 },
+  { src: "05-clip-7.mp4", durationInFrames: 90 },
+  { src: "06-clip-10.mp4", durationInFrames: 124 },
 ];
