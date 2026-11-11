@@ -21,4 +21,6 @@ export const reelClips: ReelClipData[] = [
   { src: "04-clip-6.mp4", durationInFrames: 152 },
   { src: "05-clip-7.mp4", durationInFrames: 90 },
   { src: "06-clip-10.mp4", durationInFrames: 124 },
+  { src: "07-clip-3.mp4", durationInFrames: 87 },
+  { src: "08-clip-9.mp4", durationInFrames: 110 },
 ];
