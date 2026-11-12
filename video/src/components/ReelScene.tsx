@@ -1,7 +1,18 @@
-import { AbsoluteFill, interpolate, OffthreadVideo, staticFile, useVideoConfig, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  OffthreadVideo,
+  staticFile,
+  useVideoConfig,
+  useCurrentFrame,
+} from "remotion";
 
 // Alternates zoom-in / zoom-out per clip so a run of clips doesn't feel repetitive.
-export const ReelScene: React.FC<{ src: string; zoomOut: boolean }> = ({ src, zoomOut }) => {
+export const ReelScene: React.FC<{
+  src: string;
+  zoomOut: boolean;
+  volume?: number;
+}> = ({ src, zoomOut, volume = 1 }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
 
@@ -15,6 +26,7 @@ export const ReelScene: React.FC<{ src: string; zoomOut: boolean }> = ({ src, zo
         <OffthreadVideo
           src={staticFile(`reels/${src}`)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          volume={volume}
         />
       </AbsoluteFill>
     </AbsoluteFill>

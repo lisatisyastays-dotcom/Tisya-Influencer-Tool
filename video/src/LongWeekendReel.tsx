@@ -1,9 +1,15 @@
 import { linearTiming, TransitionSeries } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
-import { AbsoluteFill, CalculateMetadataFunction, Composition, Sequence } from "remotion";
+import {
+  AbsoluteFill,
+  CalculateMetadataFunction,
+  Composition,
+  Sequence,
+} from "remotion";
 import { HookText } from "./components/HookText";
 import { ReelScene } from "./components/ReelScene";
-import { HOOK_TEXT, reelClips } from "./longWeekendReel";
+import { Voiceover } from "./components/Voiceover";
+import { HOOK_TEXT, reelClips, VOICEOVER } from "./longWeekendReel";
 
 const FPS = 30;
 const TRANSITION_FRAMES = 15;
@@ -13,9 +19,16 @@ type Props = {};
 
 // Total duration grows automatically as clips are appended to longWeekendReel.ts.
 const calculateMetadata: CalculateMetadataFunction<Props> = () => {
-  const clipsTotal = reelClips.reduce((sum, clip) => sum + clip.durationInFrames, 0);
-  const transitionsTotal = TRANSITION_FRAMES * Math.max(reelClips.length - 1, 0);
-  const durationInFrames = Math.max(clipsTotal - transitionsTotal, HOOK_DURATION_FRAMES);
+  const clipsTotal = reelClips.reduce(
+    (sum, clip) => sum + clip.durationInFrames,
+    0,
+  );
+  const transitionsTotal =
+    TRANSITION_FRAMES * Math.max(reelClips.length - 1, 0);
+  const durationInFrames = Math.max(
+    clipsTotal - transitionsTotal,
+    HOOK_DURATION_FRAMES,
+  );
 
   return { durationInFrames };
 };
@@ -60,8 +73,15 @@ export const LongWeekendReel: React.FC<Props> = () => {
       <TransitionSeries>
         {reelClips.flatMap((clip, index) => {
           const scene = (
-            <TransitionSeries.Sequence key={`clip-${index}`} durationInFrames={clip.durationInFrames}>
-              <ReelScene src={clip.src} zoomOut={index % 2 === 1} />
+            <TransitionSeries.Sequence
+              key={`clip-${index}`}
+              durationInFrames={clip.durationInFrames}
+            >
+              <ReelScene
+                src={clip.src}
+                zoomOut={index % 2 === 1}
+                volume={VOICEOVER.src ? VOICEOVER.clipVolumeUnderVoice : 1}
+              />
             </TransitionSeries.Sequence>
           );
 
@@ -77,6 +97,8 @@ export const LongWeekendReel: React.FC<Props> = () => {
           ];
         })}
       </TransitionSeries>
+
+      <Voiceover config={VOICEOVER} />
 
       <Sequence durationInFrames={HOOK_DURATION_FRAMES}>
         <HookText text={HOOK_TEXT} durationInFrames={HOOK_DURATION_FRAMES} />

@@ -6,9 +6,19 @@
 // - src: filename inside public/reels/ (staticFile() resolves it)
 // - durationInFrames: how long this clip plays at 30fps (e.g. 90 = 3s).
 
+import type { VoiceoverConfig } from "./components/Voiceover";
+
 export type ReelClipData = {
   src: string;
   durationInFrames: number;
+};
+
+// Voiceover: drop the audio file into video/public/voiceover/ and set src.
+export const VOICEOVER: VoiceoverConfig = {
+  src: null, // e.g. "long-weekend.mp3"
+  startFrame: 15,
+  volume: 1,
+  clipVolumeUnderVoice: 0.15,
 };
 
 export const HOOK_TEXT = "Got Plans For The Long Weekend?";
